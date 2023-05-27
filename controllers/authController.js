@@ -52,15 +52,21 @@ const updateUser = async (req, res) => {
     throw new badRequestError("Please provide all values");
   }
   const user = await User.findOne({ _id: req.user.userId });
-  user.company = company;
-  user.email = email;
-  user.fullName = fullName;
+
   // user.lastName = lastName;
   // user.location = location;
+  console.log(company);
+  console.log(email);
+  console.log(fullName);
 
-  await user.save();
-
+  const updatedUser = await User.updateOne(
+    { _id: req.user.userId },
+    { $set: { fullName, email, company } }
+  );
+  
+  console.log("test");
   const token = user.createJWT();
+
 
   res.status(StatusCodes.OK).json({ user, token });
 };
