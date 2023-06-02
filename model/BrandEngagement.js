@@ -20,7 +20,7 @@ const BrandEngagementSchema = new mongoose.Schema({
   },
   BrandTone: {
     type: String,
-    required: [true, "Please provide Company Sector"],
+    required: [true, "Please provide brand tone"],
     minlength: 3,
     maxlength: 20,
     trim: true,
@@ -36,6 +36,10 @@ const BrandEngagementSchema = new mongoose.Schema({
     type: String,
     enum: ['Quotes', 'general-posts', 'Top-tier-lists', 'Top-tier-lists'],
     default: 'general-posts',
+  },
+  postContent: {
+    type: String,
+    required: [true, "Please provide the post content"],
   },
   createdBy: {
     type: mongoose.Types.ObjectId,

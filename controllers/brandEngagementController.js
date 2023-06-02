@@ -2,9 +2,9 @@ import { StatusCodes } from "http-status-codes";
 import BrandEngagement from "../model/BrandEngagement.js";
 
 const saveBrandEngagement = async (req, res) => {
-  const { Timezone, CompanySector, BrandTone, TargetAudience,PostType } = req.body;
+  const { Timezone, CompanySector, BrandTone, TargetAudience,PostType,postContent } = req.body;
 
-  if (!Timezone || !CompanySector || !BrandTone | !TargetAudience | !PostType) {
+  if (!Timezone || !CompanySector || !BrandTone | !TargetAudience | !PostType | !postContent) {
     throw new BadRequestError('Please provide all values')
   }
   req.body.createdBy = req.user.userId
