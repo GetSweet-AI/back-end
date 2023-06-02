@@ -14,6 +14,8 @@ import connectDB from "./db/connect.js";
 
 // routers
 import authRouter from "./routes/authRoutes.js";
+import gptRouter from "./routes/gptRoutes.js";
+import brandEngagementRoutes from "./routes/brandEngagementRoutes.js";
 
 //middleware
 import errorHandlerMiddleware from "./middleware/error-handler.js";
@@ -24,7 +26,6 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 app.use(express.json());
-console.log("Helloooo");
 
 app.get("/", (req, res) => {
   res.json({ msg: "Welcome!" });
@@ -35,6 +36,8 @@ app.get("/api/v1", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1",brandEngagementRoutes );
+app.use("/api/v1",gptRouter );
 
 
 app.use(notFoundModule);
