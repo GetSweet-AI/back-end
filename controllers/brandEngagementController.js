@@ -3,9 +3,9 @@ import BrandEngagement from "../model/BrandEngagement.js";
 import { badRequestError, notFoundError} from "../errors/index.js";
 
 const saveBrandEngagement = async (req, res) => {
-  const { Timezone, CompanySector, BrandTone, TargetAudience,PostType,postContent } = req.body;
+  const { Timezone, CompanySector, BrandTone, TargetAudience,PostType,postContent,WebSite,BrandName } = req.body;
 
-  if (!Timezone || !CompanySector || !BrandTone | !TargetAudience | !PostType | !postContent) {
+  if (!Timezone || !CompanySector || !BrandTone | !TargetAudience | !PostType ) {
     throw new badRequestError('Please provide all values')
   }
   req.body.createdBy = req.user.userId

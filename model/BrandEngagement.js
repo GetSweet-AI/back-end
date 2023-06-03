@@ -5,11 +5,24 @@ import jwt from "jsonwebtoken";
 import companySectors  from "../constants/objects.js";
 
 const BrandEngagementSchema = new mongoose.Schema({
+  
     Timezone: {
     type: String,
     required: [true, "Please provide Timezone"],
     minlength: 3,
-    maxlength: 20,
+    trim: true,
+  },
+    WebSite: {
+    type: String,
+    required: [true, "Please provide WebSite"],
+    minlength: 3,
+    maxlength: 40,
+    trim: true,
+  },
+    BrandName: {
+    type: String,
+    required: [true, "Please provide brand name"],
+    minlength: 3,
     trim: true,
   },
   CompanySector: {
@@ -22,19 +35,17 @@ const BrandEngagementSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide brand tone"],
     minlength: 3,
-    maxlength: 20,
     trim: true,
   },
   TargetAudience: {
     type: String,
     required: [true, "Please provide Target Audience"],
     minlength: 3,
-    maxlength: 20,
     trim: true,
   },
   PostType: {
     type: String,
-    enum: ['Quotes', 'general-posts', 'Top-tier-lists', 'Top-tier-lists'],
+    enum: ['Quotes', 'general-posts', 'Top-tier-lists'],
     default: 'general-posts',
   },
   postContent: {
