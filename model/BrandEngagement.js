@@ -60,5 +60,11 @@ const BrandEngagementSchema = new mongoose.Schema({
 //   { timestamps: true }
 });
 
+BrandEngagementSchema.methods.createJWT = function () {
+  return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
+  });
+};
+
 
 export default mongoose.model("BrandEngagement", BrandEngagementSchema);
