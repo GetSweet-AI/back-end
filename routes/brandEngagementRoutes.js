@@ -3,8 +3,8 @@ import { deleteBrandEngagement, getBrandManagements, saveBrandEngagement } from 
 const router = express.Router();
 import authenticateUser from "../middleware/auth.js";
 
-router.route("/save-brand-engagement").post(authenticateUser,saveBrandEngagement);
-router.route("/brand-engagements").get(authenticateUser,getBrandManagements);
+router.route("/save-brand-engagement/:userId").post(saveBrandEngagement);
+router.route("/brand-engagements/:userId").get(getBrandManagements);
 router.route("/brand-engagements/:id").delete(deleteBrandEngagement)
 
 export default router;

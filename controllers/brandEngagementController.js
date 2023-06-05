@@ -2,29 +2,80 @@ import { StatusCodes } from "http-status-codes";
 import BrandEngagement from "../model/BrandEngagement.js";
 import { badRequestError, notFoundError} from "../errors/index.js";
 
-const saveBrandEngagement = async (req, res) => {
-  const { Timezone, CompanySector, BrandTone, TargetAudience,PostType,postContent,WebSite,BrandName } = req.body;
+// const saveBrandEngagement = async (req, res) => {
+//   const { Timezone, CompanySector, BrandTone, TargetAudience,PostType,postContent,WebSite,BrandName } = req.body;
 
-  if (!Timezone || !CompanySector || !BrandTone | !TargetAudience | !PostType ) {
-    throw new badRequestError('Please provide all values')
-  }
-  req.body.createdBy = req.user.userId
+//   if (!Timezone || !CompanySector || !BrandTone | !TargetAudience | !PostType ) {
+//     throw new badRequestError('Please provide all values')
+//   }
+//   req.body.createdBy = req.user.userId
   
-  const brandEngagement = await BrandEngagement.create(req.body)
-  res.status(StatusCodes.CREATED).json({ brandEngagement })
+//   const brandEngagement = await BrandEngagement.create(req.body)
+//   res.status(StatusCodes.CREATED).json({ brandEngagement })
+// };
+// router.route("/save-brand-engagement/:userId").post(saveBrandEngagement);
+
+const saveBrandEngagement = async (req, res) => {
+  try {
+    const { Timezone, CompanySector, BrandTone, TargetAudience, PostType, postContent, WebSite, BrandName } = req.body;
+
+    if (!Timezone || !CompanySector || !BrandTone || !TargetAudience || !PostType) {
+      throw new badRequestError('Please provide all values');
+    }
+    
+    const userId = req.params.userId; // Extract the userId from the route parameter
+
+    if (!userId) {
+      throw new badRequestError('User ID not found');
+    }
+    
+    const brandEngagement = await BrandEngagement.create({
+      Timezone,
+      CompanySector,
+      BrandTone,
+      TargetAudience,
+      PostType,
+      postContent,
+      WebSite,
+      BrandName,
+      createdBy: userId // Set createdBy to the userId
+    });
+
+    res.status(StatusCodes.CREATED).json({ brandEngagement });
+  } catch (error) {
+    next(error);
+  }
 };
 
+
+// const getBrandManagements = async (req, res, next) => {
+//   try {
+//     const userId = req.user.userId;
+
+//     if (!userId) {
+//       throw new Error('User ID not found');
+//     }
+
+//     const brandManagements = await BrandEngagement.find({ createdBy: userId });
+
+//     res.status(StatusCodes.OK).json({ brandManagements });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 const getBrandManagements = async (req, res, next) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.params.userId; // Extract the userId from the route parameter
 
     if (!userId) {
       throw new Error('User ID not found');
     }
 
-    const brandManagements = await BrandEngagement.find({ createdBy: userId });
+    // Your logic to retrieve brand engagements based on the user ID
+    const brandEngagements = await BrandEngagement.find({ createdBy: userId });
 
-    res.status(StatusCodes.OK).json({ brandManagements });
+    // Return the brand engagements as a response
+    res.status(200).json({ brandEngagements });
   } catch (error) {
     next(error);
   }

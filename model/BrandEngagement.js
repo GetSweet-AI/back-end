@@ -62,7 +62,7 @@ const BrandEngagementSchema = new mongoose.Schema({
 
 BrandEngagementSchema.methods.createJWT = function () {
   return jwt.sign({ userId: this._id }, "y/B?E(H+MbPeShVmYq3t6w9z$C&F)J@N", {
-    expiresIn: "1d",
+    expiresIn: "2h",
   });
 };
 
