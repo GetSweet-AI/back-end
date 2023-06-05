@@ -15,7 +15,7 @@ import { badRequestError, notFoundError} from "../errors/index.js";
 // };
 // router.route("/save-brand-engagement/:userId").post(saveBrandEngagement);
 
-const saveBrandEngagement = async (req, res) => {
+const saveBrandEngagement = async (req, res,next) => {
   try {
     const { Timezone, CompanySector, BrandTone, TargetAudience, PostType, postContent, WebSite, BrandName } = req.body;
 
