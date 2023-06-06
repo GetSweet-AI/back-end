@@ -44,7 +44,7 @@ const saveBrandEngagement = async (req, res) => {
     res.status(StatusCodes.CREATED).json({ brandEngagement });
   } catch (error) {
     // Handle the error within the catch block
-    console.error(error);
+    // console.error(error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'An error occurred' });
   }
 };
