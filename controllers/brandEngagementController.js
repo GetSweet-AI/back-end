@@ -15,7 +15,7 @@ import { badRequestError, notFoundError} from "../errors/index.js";
 // };
 // router.route("/save-brand-engagement/:userId").post(saveBrandEngagement);
 
-const saveBrandEngagement = async (req, res,next) => {
+const saveBrandEngagement = async (req, res) => {
   try {
     const { Timezone, CompanySector, BrandTone, TargetAudience, PostType, postContent, WebSite, BrandName } = req.body;
 
@@ -43,9 +43,12 @@ const saveBrandEngagement = async (req, res,next) => {
 
     res.status(StatusCodes.CREATED).json({ brandEngagement });
   } catch (error) {
-    next(error);
+    // Handle the error within the catch block
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'An error occurred' });
   }
 };
+
 
 
 // const getBrandManagements = async (req, res, next) => {
