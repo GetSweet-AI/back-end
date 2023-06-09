@@ -1,9 +1,10 @@
 import User from "../model/User.js";
 import { StatusCodes } from "http-status-codes";
 import { badRequestError, UnAuthenticatedError } from "../errors/index.js";
+import nodemailer from "nodemailer";
 
 const register = async (req, res) => {
-  const { fullName, email, password, company } = req.body;
+  const { fullName, email, password, company,role } = req.body;
   if (!fullName || !email || !password || !company ) {
     throw new badRequestError("Please provide all values");
   }
@@ -14,7 +15,7 @@ const register = async (req, res) => {
   }
 
   //try and cash should be implemented (but we use instead expr-async-err)
-  const user = await User.create({ fullName, email, password,company });
+  const user = await User.create({ fullName, email, password,company,role });
   const token = user.createJWT();
   res.status(StatusCodes.CREATED).json({
     user,
@@ -67,4 +68,29 @@ const updateUser = async (req, res) => {
   res.status(StatusCodes.OK).json({ user, token });
 };
 
-export { register, login, updateUser };
+
+
+const sendVerificationCode = async (email) => {
+  const verificationCode = generateVerificationCode(); // Your code to generate a random verification code
+
+  // Save the verification code in the database associated with the user's email
+
+  // Send the verification code to the user's email
+  const transporter = nodemailer.createTransport({
+    // Configure your email provider settings here
+  });
+
+  const mailOptions = {
+    from: "hzaydi78@gmail.com",
+    to: email,
+    subject: "Password Reset Verification",
+    text: `Your verification code is: ${verificationCode}`,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+
+
+
+export { register, login, updateUser,sendVerificationCode };

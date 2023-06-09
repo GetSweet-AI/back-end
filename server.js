@@ -14,6 +14,7 @@ import connectDB from "./db/connect.js";
 
 // routers
 import authRouter from "./routes/authRoutes.js";
+import adminRouter from "./routes/adminRoutes.js";
 import gptRouter from "./routes/gptRoutes.js";
 import brandEngagementRoutes from "./routes/brandEngagementRoutes.js";
 
@@ -36,6 +37,7 @@ app.get("/api/v1", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1",brandEngagementRoutes );
 app.use("/api/v1",gptRouter );
 
