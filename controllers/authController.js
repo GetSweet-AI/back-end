@@ -44,8 +44,6 @@ const login = async (req, res) => {
   res.status(StatusCodes.OK).json({ user, token, location: user.location });
 };
 
-
-
 const updateUser = async (req, res) => {
   try {
     const { fullName, email, company } = req.body;
@@ -74,10 +72,36 @@ const updateUser = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Check if the user exists
+    const user = await User.findOne({ _id: userId });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Delete user
+    const deletedUser = await User.findOneAndDelete({ _id: userId });
+
+    if (!deletedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Error deleting user' });
+  }
+};
+
+
 const generateVerificationCode = () => {
   const code = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
   return code.toString(); // Convert the number to a string
 };
+
 const sendVerificationCode = async (req, res) => {
   try {
     const verificationCode = generateVerificationCode(); // Your code to generate a random verification code
@@ -196,4 +220,4 @@ const resetPassword = async (req, res) => {
 };
 
 
-export { register, login, updateUser,sendVerificationCode,verifyEmail, resetPassword };
+export { register, login, updateUser,sendVerificationCode,verifyEmail, resetPassword,deleteUser };
