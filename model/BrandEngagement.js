@@ -45,7 +45,7 @@ const BrandEngagementSchema = new mongoose.Schema({
   },
   PostType: {
     type: String,
-    enum: ['Quotes', 'general-posts', 'Top-tier-lists'],
+    enum: ['Quotes', 'general-posts', 'Top-tier-lists','other'],
     default: 'general-posts',
   },
   postContent: {

@@ -33,7 +33,6 @@ const UserSchema = new mongoose.Schema({
     maxlength: 20,
     trim: true,
   },
-    // existing fields
     role: {
       type: String,
       required: true,
@@ -45,6 +44,7 @@ const UserSchema = new mongoose.Schema({
       required: false,
       default:""
     },
+    
 });
 
 UserSchema.pre("save", async function () {
