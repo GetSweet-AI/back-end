@@ -128,15 +128,15 @@ const sendVerificationCode = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service:'gmail',
       auth: {
-        user: 'hzaydi78@gmail.com',
-        pass: 'iliqsfxylcdvbrum',
+        user: 'sales@getsweet.ai',
+        pass: 'bripwwstustvdiei',
       },
     });
     console.log('after');
 
 
     const mailOptions = {
-      from: 'hzaydi78@gmail.com',
+      from: 'sales@getsweet.ai',
       to: email,
       subject: 'Password Reset Verification',
       html: `
