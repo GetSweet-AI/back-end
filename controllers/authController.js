@@ -278,7 +278,7 @@ const sendEmailVerification = async (req, res) => {
     }
 
     // Generate the verification link
-    const verificationLink = `http://127.0.0.1:5173/confirm-email/${userId}`;
+    const verificationLink = `https://seashell-app-8amlb.ondigitalocean.app/confirm-email/${userId}`;
 
     // Send the verification link to the user's email
     const transporter = nodemailer.createTransport({
