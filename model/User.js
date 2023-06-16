@@ -44,6 +44,11 @@ const UserSchema = new mongoose.Schema({
       required: false,
       default:""
     },
+    isEmailConfirmed: {
+      type: Boolean,
+      required: false,
+      default:false
+    },
     
 });
 

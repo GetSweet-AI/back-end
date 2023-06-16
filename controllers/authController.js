@@ -30,11 +30,15 @@ const login = async (req, res) => {
     throw new badRequestError("Please provide all values");
   }
   const user = await User.findOne({ email }).select("+password");
+  const userData = await User.findOne({ email });
 
   if (!user) {
     throw new UnAuthenticatedError("Invalid Credentials");
   }
 
+  if (!userData.isEmailConfirmed) {
+    throw new UnAuthenticatedError("Email not confirmed. Please verify your email.");
+  }
   const isPasswordCorrect = await user.comparePassword(password);
   if (!isPasswordCorrect) {
     throw new UnAuthenticatedError("Invalid Credentials");
@@ -50,10 +54,10 @@ const updateUser = async (req, res) => {
     const { userId } = req.params;
 
     // check if the email do not exist in db
-    const userAlreadyExists = await User.findOne({ email });
-    if (userAlreadyExists) {
-      return res.status(400).json({ error: 'Email already in use' });
-    }
+    // const userAlreadyExists = await User.findOne({ email });
+    // if (userAlreadyExists) {
+    //   return res.status(400).json({ error: 'Email already in use' });
+    // }
     // Update user information
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
@@ -95,7 +99,6 @@ const deleteUser = async (req, res) => {
     res.status(500).json({ error: 'Error deleting user' });
   }
 };
-
 
 const generateVerificationCode = () => {
   const code = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
@@ -219,5 +222,100 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const getUserById = async (req, res) => {
+  const { userId } = req.params;
 
-export { register, login, updateUser,sendVerificationCode,verifyEmail, resetPassword,deleteUser };
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({ error: "User not found" });
+    }
+
+    // Exclude sensitive data like password before sending the response
+    user.password = undefined;
+
+    res.status(StatusCodes.OK).json({ user });
+  } catch (error) {
+    console.error("Error retrieving user by ID:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
+  }
+};
+
+const confirmUserEmail = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Check if the user with the provided userId exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({ error: "User not found" });
+    }
+
+  //   console.log('before')
+    // Switch the user role
+   const newUser =  await User.findByIdAndUpdate(
+      userId,
+      { $set: { isEmailConfirmed: true } },
+      { new: true }
+    );
+  //   console.log('after')
+    res.status(StatusCodes.OK).json({ message: "User confirmed successfully", newUser });
+  } catch (error) {
+    // Handle error
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
+  }
+};
+
+const sendEmailVerification = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const { userId } = req.params;
+    
+    // Check if email is provided
+    if (!email) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Email is required' });
+    }
+
+    // Generate the verification link
+    const verificationLink = `http://127.0.0.1:5173/confirm-email/${userId}`;
+
+    // Send the verification link to the user's email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'sales@getsweet.ai',
+        pass: 'bripwwstustvdiei',
+      },
+    });
+
+    const mailOptions = {
+      from: 'sales@getsweet.ai',
+      to: email,
+      subject: 'Email Confirmation',
+      html: `
+        <div style="background-color: #f2f2f2; padding: 20px;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            <h1 style="text-align: center; color: #333; font-size: 24px; margin-bottom: 20px;">Email Confirmation</h1>
+            <p style="font-size: 16px; line-height: 1.5; color: #555;">Thank you for registering. To confirm your email, please click the following link:</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${verificationLink}" style="display: inline-block; background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Confirm Email</a>
+            </div>
+            <p style="font-size: 16px; line-height: 1.5; color: #555;">By clicking the link above, you will confirm your email.</p>
+            <p style="font-size: 14px; line-height: 1.2; color: #888; margin-top: 40px; text-align: center;">This email was sent by the GetSweet.AI Team.</p>
+          </div>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(StatusCodes.OK).json({ message: 'Email verification link sent successfully' });
+  } catch (error) {
+    // Handle error
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
+  }
+};
+
+
+export { register, login, updateUser,sendVerificationCode,verifyEmail, resetPassword,deleteUser,getUserById,confirmUserEmail,sendEmailVerification };
