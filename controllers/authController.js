@@ -54,10 +54,10 @@ const updateUser = async (req, res) => {
     const { userId } = req.params;
 
     // check if the email do not exist in db
-    // const userAlreadyExists = await User.findOne({ email });
-    // if (userAlreadyExists) {
-    //   return res.status(400).json({ error: 'Email already in use' });
-    // }
+    const userAlreadyExists = await User.findOne({ email });
+    if (userAlreadyExists) {
+      return res.status(400).json({ error: 'Email already in use' });
+    }
     // Update user information
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
