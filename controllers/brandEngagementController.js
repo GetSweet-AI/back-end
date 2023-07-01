@@ -54,6 +54,23 @@ const getBrandManagements = async (req, res, next) => {
     next(error);
   }
 };
+const getFeedPosts = async (req, res, next) => {
+  try {
+    const userId = req.params.userId; // Extract the userId from the route parameter
+
+    if (!userId) {
+      throw new Error('User ID not found');
+    }
+
+    // Your logic to retrieve brand engagements based on the user ID
+    const feedPosts = await FeedPosts.find({ createdBy: userId });
+
+    // Return the brand engagements as a response
+    res.status(200).json({ feedPosts });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const deleteBrandEngagement = async (req, res) => {
   const { id: brandId } = req.params
@@ -69,6 +86,21 @@ const deleteBrandEngagement = async (req, res) => {
   await brandEngagement.remove()
 
   res.status(StatusCodes.OK).json({ msg: 'Success! brandEngagement removed' })
+}
+const deleteFeedPost = async (req, res) => {
+  const { id: brandId } = req.params
+
+  const feedPosts = await FeedPosts.findOne({ _id: brandId })
+
+  if (!feedPosts) {
+    throw new notFoundError(`No feedPosts with id :${brandId}`)
+  }
+
+  // checkPermissions(req.user, feedPosts.createdBy)
+
+  await feedPosts.remove()
+
+  res.status(StatusCodes.OK).json({ msg: 'Success! feedPosts removed' })
 }
 
 const saveFeedPost = async (req, res) => {
@@ -102,4 +134,4 @@ const saveFeedPost = async (req, res) => {
   }
 };
 
-export { saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost };
+export { saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };

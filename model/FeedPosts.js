@@ -27,6 +27,14 @@ const FeedPosts = new mongoose.Schema({
     type: String,
     required: [true, "Please provide BrandEngagementID"],
   },
+  ShouldDelete : {
+    type:Boolean,
+    default:false
+  },
+  IsDeleted : {
+    type:Boolean,
+    default:false
+  },
   createdBy: {
     type: mongoose.Types.ObjectId,
     ref: 'User',
