@@ -3,6 +3,12 @@ import { StatusCodes } from "http-status-codes";
 import { badRequestError, notFoundError, UnAuthenticatedError } from "../errors/index.js";
 import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
+import stripeInit from 'stripe';
+
+import dotenv from "dotenv";
+dotenv.config(); 
+
+const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
 
 const register = async (req, res) => {
   const { fullName, email, password, company,role } = req.body;
@@ -14,9 +20,22 @@ const register = async (req, res) => {
   if (userAlreadyExists) {
     throw new badRequestError("Email already in use");
   }
+  let customer;
+  // Check if the customer exists
+  const customers = await stripe.customers.list({ email: email, limit: 1 });
+  if(customers.data.length>0){
+  customer = customers.data[0]
+  }else{
+    customer = await stripe.customers.create({
+      name: fullName,
+      email: email,
+      description: 'New Customer'
+    });
+  }
+
 
   //try and cash should be implemented (but we use instead expr-async-err)
-  const user = await User.create({ fullName, email, password,company,role });
+  const user = await User.create({ fullName, email, password,company,role,customerId:customer.id });
   const token = user.createJWT();
   res.status(StatusCodes.CREATED).json({
     user,
@@ -42,7 +61,9 @@ const login = async (req, res) => {
   const isPasswordCorrect = await user.comparePassword(password);
   if (!isPasswordCorrect) {
     throw new UnAuthenticatedError("Invalid Credentials");
+  
   }
+
   const token = user.createJWT();
   user.password = undefined;
   res.status(StatusCodes.OK).json({ user, token, location: user.location });
@@ -62,6 +83,27 @@ const updateUser = async (req, res) => {
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
       { $set: { fullName, email, company } },
+      { returnOriginal: false }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ user: updatedUser });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+const updateAvailableTokens = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Update user information
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $inc: { availableTokens: 10 } },
       { returnOriginal: false }
     );
 
@@ -318,4 +360,4 @@ const sendEmailVerification = async (req, res) => {
 };
 
 
-export { register, login, updateUser,sendVerificationCode,verifyEmail, resetPassword,deleteUser,getUserById,confirmUserEmail,sendEmailVerification };
+export { register, login, updateUser,sendVerificationCode,verifyEmail, resetPassword,deleteUser,getUserById,confirmUserEmail,sendEmailVerification,updateAvailableTokens };

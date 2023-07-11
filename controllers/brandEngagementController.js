@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import BrandEngagement from "../model/BrandEngagement.js";
 import FeedPosts from "../model/FeedPosts.js";
 import { badRequestError, notFoundError} from "../errors/index.js";
+import User from "../model/User.js";
 
 const saveBrandEngagement = async (req, res) => {
   try {
@@ -28,8 +29,12 @@ const saveBrandEngagement = async (req, res) => {
       BrandName,
       createdBy: userId // Set createdBy to the userId
     });
-
-    res.status(StatusCodes.CREATED).json({ brandEngagement });
+    const updatedUser =  await User.findOneAndUpdate(
+      { _id: userId },
+      { $inc: { availableTokens: -1 } },
+      { new: true }
+    );
+    res.status(StatusCodes.CREATED).json({ brandEngagement,updatedUser });
   } catch (error) {
     // Handle the error within the catch block
     // console.error(error);
@@ -126,6 +131,8 @@ const saveFeedPost = async (req, res) => {
       createdBy: userId // Set createdBy to the userId
     });
 
+   
+
     res.status(StatusCodes.CREATED).json({ feedPosts });
   } catch (error) {
     // Handle the error within the catch block
@@ -133,5 +140,7 @@ const saveFeedPost = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'An error occurred' });
   }
 };
+
+
 
 export { saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
