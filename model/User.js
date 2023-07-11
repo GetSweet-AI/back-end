@@ -49,6 +49,26 @@ const UserSchema = new mongoose.Schema({
       required: false,
       default:false
     },
+    availableTokens: {
+      type: Number,
+      required: false,
+      default:3
+    },
+    customerId: {
+      type: String,
+      required: false,
+      default:null
+    },
+    subscriptionId: {
+      type: String,
+      required: false,
+      default:null
+    },
+    Plan:{
+      type:String,
+      enum: ["none", "basic", "pro"],
+      default:"none"
+    }
     
 });
 
