@@ -3,6 +3,7 @@ import User from '../model/User.js';
 
 export async function checkoutController(req, res) {
   try {
+    
     const { name, number, email, userId } = req.body;
     const { secretKey } = req.params;
 
@@ -11,6 +12,8 @@ export async function checkoutController(req, res) {
     let customer;
 
     // Check if the customer exists
+
+    
     // try {
     //   customer = await stripe.customers.retrieve(email, {
     //     expand: ['subscriptions'],
@@ -26,7 +29,8 @@ export async function checkoutController(req, res) {
 
  
   // Check if the customer exists
-    const customers = await stripe.customers.list({ email: email, limit: 1 });
+ 
+  const customers = await stripe.customers.list({ email: email, limit: 1 });
     if(customers.data.length>0){
     customer = customers.data[0]
     }else{
