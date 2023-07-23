@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import User from "../model/User.js";
 import FeedPosts from "../model/FeedPosts.js";
+import BrandEngagement from "../model/BrandEngagement.js";
 
 const getUsers = async (req, res) => {
     try {
@@ -79,6 +80,25 @@ const getUsers = async (req, res) => {
     }
   };
 
+  const getAllBrandManagements = async (req, res, next) => {
+    try {
+      const { userId } = req.query;
+  
+      // Check if the user with the provided userId exists and has the "admin" role
+      const user = await User.findOne({ _id: userId, role: "admin" });
+      if (!user) {
+        // If the user is not found or is not an admin, return a forbidden error
+        return res.status(StatusCodes.FORBIDDEN).json({ error: "You are not authorized to perform this action" });
+      }
+      // Your logic to retrieve brand engagements based on the user ID
+      const brandEngagements = await BrandEngagement.find({});
+  
+      // Return the brand engagements as a response
+      res.status(200).json({ brandEngagements });
+    } catch (error) {
+      next(error);
+    }
+  };
   
 
-export { getUsers,updateUserRole,getFeedPostsForAdmin };
+export { getUsers,updateUserRole,getFeedPostsForAdmin,getAllBrandManagements };

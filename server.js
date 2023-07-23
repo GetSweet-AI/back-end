@@ -37,6 +37,8 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
     async (req, res) => {
 
       let event;
+      let plan;
+      let number_of_tokens;
 
       try {
         event = await stripe.webhooks.constructEvent(
@@ -73,6 +75,25 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
           );
         };
 
+        if ( event.data.object.lines.data[0].plan.id === process.env.STRIPE_PRODUCT_PRICE_ID) {
+          // console.log('You are talking about basic product')
+          plan = 'basic';
+          number_of_tokens = 10;
+
+        }
+        if ( event.data.object.lines.data[0].plan.id === process.env.STRIPE_PRODUCT_PRO_PRICE_ID) {
+          // console.log('You are talking about por product')
+          plan = 'pro';
+          number_of_tokens=20;
+        }
+        if ( event.data.object.lines.data[0].plan.id === process.env.STRIPE_PRODUCT_PRO_PLUS_PRICE_ID) {
+          // console.log('You are talking about pro plus product')
+          plan = 'pro_plus';
+          number_of_tokens=50
+
+        }
+  
+
         switch (event.type) {
           case 'invoice.paid':
             /*
@@ -90,13 +111,16 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
               Allowed access to your service.
             */
               const customerId = dataObject.customer;
-              console.log("customerId from WEBhook " + customerId)
-              console.log(`payment_succeeded: ${dataObject.status}`);
+              // console.log("customerId from WEBhook " + customerId)
+              console.log(`dataObject : ${dataObject}`);
 
-            // Update user information
+            // Update user information     $set:Plan: "basic" },
             await User.findOneAndUpdate(
               { customerId },
-              { $inc: { availableTokens: 10 }, Plan: "basic" },
+              { 
+                $inc: { availableTokens: number_of_tokens }, 
+                $set: { Plan: plan,invoiceUrl:dataObject.hosted_invoice_url }
+            },
               { returnOriginal: false }
             );
 
@@ -157,6 +181,13 @@ app.get("/", (req, res) => {
 app.get("/api/v1", (req, res) => {
   res.status(200).json({ msg: "API" });
 });
+app.post("/billing", async (req, res) => {
+  const { customer } = req.body;
+
+  const session = await Stripe.createBillingSession(customer);
+
+  res.json({ url: session.url });
+});
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
@@ -164,8 +195,6 @@ app.use("/api/v1",brandEngagementRoutes );
 app.use("/api/v1",gptRouter );
 app.use("/api/v1",checkoutRoutes );
 app.use("/api/v1",stripeRouter );
-
-
 
 app.use(notFoundModule);
 app.use(errorHandlerMiddleware);

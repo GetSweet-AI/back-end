@@ -4,31 +4,18 @@ import User from '../model/User.js';
 export async function checkoutController(req, res) {
   try {
     
-    const { name, number, email, userId } = req.body;
+    const { name, number, email, userId,plan } = req.body;
     const { secretKey } = req.params;
 
     const stripe = stripeInit(secretKey);
 
     let customer;
 
-    // Check if the customer exists
-
-    
-    // try {
-    //   customer = await stripe.customers.retrieve(email, {
-    //     expand: ['subscriptions'],
-    //   });
-    // } catch (error) {
-    //   // If the customer doesn't exist, create a new customer
-    //   customer = await stripe.customers.create({
-    //     name: name,
-    //     email: email,
-    //     description: 'New Customer'
-    //   });
-    // }
-
+    const priceId  = (plan === "basic" ? process.env.STRIPE_PRODUCT_PRICE_ID :
+       plan === "pro" ? process.env.STRIPE_PRODUCT_PRO_PRICE_ID :  process.env.STRIPE_PRODUCT_PRO_PLUS_PRICE_ID )
  
   // Check if the customer exists
+  // console.log("Prci")
  
   const customers = await stripe.customers.list({ email: email, limit: 1 });
     if(customers.data.length>0){
@@ -44,7 +31,7 @@ export async function checkoutController(req, res) {
     
     const lineItems = [
       {
-        price: process.env.STRIPE_PRODUCT_PRICE_ID,
+        price: priceId,
         quantity: 1,
       },
     ];

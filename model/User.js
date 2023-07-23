@@ -66,8 +66,13 @@ const UserSchema = new mongoose.Schema({
     },
     Plan:{
       type:String,
-      enum: ["none", "basic", "pro"],
+      enum: ["none", "basic", "pro","pro_plus"],
       default:"none"
+    },
+    invoiceUrl : {
+      type:String,
+      required:false,
+      default:null
     }
     
 });
