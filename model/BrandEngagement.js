@@ -57,14 +57,13 @@ const BrandEngagementSchema = new mongoose.Schema({
     ref: 'User',
     required: [true, 'Please provide user'],
   },
+  feedPostId: {
+    type: String,
+    default : null
+  },
 //   { timestamps: true }
 });
 
-BrandEngagementSchema.methods.createJWT = function () {
-  return jwt.sign({ userId: this._id }, "y/B?E(H+MbPeShVmYq3t6w9z$C&F)J@N", {
-    expiresIn: "2h",
-  });
-};
 
 
 export default mongoose.model("BrandEngagement", BrandEngagementSchema);

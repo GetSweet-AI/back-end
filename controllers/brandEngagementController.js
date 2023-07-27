@@ -59,6 +59,45 @@ const getBrandManagements = async (req, res, next) => {
     next(error);
   }
 };
+
+const getBrandEngagementById = async (req,res)=>{
+  const { id } = req.params;
+
+  try {
+    const brandEngagement = await BrandEngagement.findById(id);
+
+    if (!brandEngagement) {
+      return res.status(StatusCodes.NOT_FOUND).json({ error: "brandEngagement not found" });
+    }
+
+    res.status(StatusCodes.OK).json({ brandEngagement });
+  } catch (error) {
+    console.error("Error retrieving user by ID:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
+  }
+}
+
+const updateBrandEngagementPostFeed = async (req,res)=>{
+  //To-do
+  try {
+    const { feedPostId} = req.body;
+    const { id } = req.params;
+
+    // Update user information
+    const updatedBrandEngagement = await BrandEngagement.findOneAndUpdate(
+      { _id: id },
+      { $set: { feedPostId } },
+      { returnOriginal: false }
+    );
+
+    res.status(200).json({ brandEngagement: updatedBrandEngagement });
+
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 const getFeedPosts = async (req, res, next) => {
   try {
     const userId = req.params.userId; // Extract the userId from the route parameter
@@ -143,4 +182,4 @@ const saveFeedPost = async (req, res) => {
 
 
 
-export { saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
+export { updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };

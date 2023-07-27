@@ -20,6 +20,7 @@ import stripeRouter from "./routes/stripeRoutes.js";
 import gptRouter from "./routes/gptRoutes.js";
 import brandEngagementRoutes from "./routes/brandEngagementRoutes.js";
 import checkoutRoutes from "./routes/checkoutRoutes.js";
+import clientConnectsRoutes from "./routes/clientConnectRoutes.js"
 import stripeInit from 'stripe';
 //middleware
 import errorHandlerMiddleware from "./middleware/error-handler.js";
@@ -195,6 +196,7 @@ app.use("/api/v1",brandEngagementRoutes );
 app.use("/api/v1",gptRouter );
 app.use("/api/v1",checkoutRoutes );
 app.use("/api/v1",stripeRouter );
+app.use("/api/v1",clientConnectsRoutes );
 
 app.use(notFoundModule);
 app.use(errorHandlerMiddleware);
