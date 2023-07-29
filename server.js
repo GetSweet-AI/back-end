@@ -120,7 +120,7 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
               { customerId },
               { 
                 $inc: { availableTokens: number_of_tokens }, 
-                $set: { Plan: plan,invoiceUrl:dataObject.hosted_invoice_url }
+                $set: { Plan: plan,invoiceUrl:dataObject.hosted_invoice_url,subscriptionId:subscriptionId }
             },
               { returnOriginal: false }
             );

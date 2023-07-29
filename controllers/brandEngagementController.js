@@ -116,6 +116,20 @@ const getFeedPosts = async (req, res, next) => {
   }
 };
 
+const getFeedPostByBEId = async (req, res, next) => {
+  try {
+    const brandEngagementID = req.params.brandEngagementID; // Extract the userId from the route parameter
+
+    // Your logic to retrieve brand engagements based on the BrandEngagementID
+    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID });
+
+    // Return the brand engagements as a response
+    res.status(200).json({ feedPosts });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const deleteBrandEngagement = async (req, res) => {
   const { id: brandId } = req.params
 
@@ -182,4 +196,4 @@ const saveFeedPost = async (req, res) => {
 
 
 
-export { updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
+export { getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
