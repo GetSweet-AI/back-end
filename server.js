@@ -115,14 +115,14 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
               // console.log("customerId from WEBhook " + customerId)
               console.log(`dataObject : ${dataObject}`);
 
-              console.log("subscription_id :"+subscription_id)
+              // console.log("subscription_id :"+subscription_id)
 
             // Update user information     $set:Plan: "basic" },
             await User.findOneAndUpdate(
               { customerId },
               { 
                 $inc: { availableTokens: number_of_tokens }, 
-                $set: { Plan: plan,invoiceUrl:dataObject.hosted_invoice_url,subscriptionId:dataObject['subscription'] }
+                $set: { Plan: plan,invoiceUrl:dataObject.hosted_invoice_url,subscriptionId:subscription_id }
             },
               { returnOriginal: false }
             );
