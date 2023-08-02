@@ -187,5 +187,41 @@ const hasSubscription = async (req, res) => {
     }
   };
   
+  const updatePlan = async (req, res) => {
+    try {
+      const { customerId, newPlanId } = req.body;
+      const subscription = await stripe.subscriptions.update(
+        customerId,
+        {
+          items: [{
+            id: subscriptionItemId, // Get this from the current subscription
+            price: newPlanId,
+          }],
+        }
+      );
+      res.json({ subscription });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
 
-export {getSubscriptionsByCustomerId,cancelSubscriptionByCustomerId,checkSubscriptionStatusByCustOmerID,checkSubscriptionStatus,getSubscriptions,getInvoicePreview,getSubscriptionById,updateSubscription,cancelSubscription,hasSubscription };
+  const getAllPlanInfos  = async (req, res) => {
+    try {
+      const plans = await stripe.plans.list();
+      const planInfos = plans.data.map(plan => ({
+        id: plan.id,
+        amount: plan.amount,
+        currency: plan.currency,
+        interval: plan.interval,
+        productName: plan.product.name,
+      }));
+      res.json({ planInfos });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+export {getAllPlanInfos ,updatePlan,getSubscriptionsByCustomerId,
+  cancelSubscriptionByCustomerId,checkSubscriptionStatusByCustOmerID,
+  checkSubscriptionStatus,getSubscriptions,getInvoicePreview,getSubscriptionById,
+  updateSubscription,cancelSubscription,hasSubscription };

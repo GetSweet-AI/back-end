@@ -60,6 +60,11 @@ const UserSchema = new mongoose.Schema({
       required: false,
       default:null
     },
+    planId: {
+      type: String,
+      required: false,
+      default:null
+    },
     subscriptionStatus:{
       type: String,
       required: false,

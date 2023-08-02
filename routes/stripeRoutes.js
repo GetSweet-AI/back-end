@@ -1,5 +1,5 @@
 import express from "express"
-import { cancelSubscription, cancelSubscriptionByCustomerId, checkSubscriptionStatus, checkSubscriptionStatusByCustOmerID, getSubscriptionById, getSubscriptions, getSubscriptionsByCustomerId, hasSubscription } from "../controllers/stripeController.js";
+import { cancelSubscription, cancelSubscriptionByCustomerId, checkSubscriptionStatus, checkSubscriptionStatusByCustOmerID, getAllPlanInfos , getSubscriptionById, getSubscriptions, getSubscriptionsByCustomerId, hasSubscription, updatePlan } from "../controllers/stripeController.js";
 
 const router = express.Router();
 
@@ -13,5 +13,10 @@ router.get('/subscriptions/customer/:customerId', getSubscriptionsByCustomerId);
 router.post('/cancel-subscription/:customerId', cancelSubscriptionByCustomerId);
 router.get('/:subscriptionId/status', checkSubscriptionStatus);
 router.get('/:customerId/status', checkSubscriptionStatusByCustOmerID);
+
+// POST /update-plan
+router.post('/update-plan', updatePlan);
+
+router.get('/plans', getAllPlanInfos );
 
 export default router;
