@@ -44,9 +44,9 @@ export async function checkoutController(req, res) {
     const checkoutSession = await stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: 'subscription',
-      success_url: `http://127.0.0.1:5173/success`,
+      success_url: `https://64cbe501a1866202ab8e7907--effervescent-squirrel-e23202.netlify.app/success`,
     //   success_url: `${protocol}${host}/success`,
-      cancel_url: `http://127.0.0.1:5173/payment`,
+      cancel_url: `https://64cbe501a1866202ab8e7907--effervescent-squirrel-e23202.netlify.app/payment`,
       payment_method_types: ['card'],
       customer: customer.id,
       metadata: {
