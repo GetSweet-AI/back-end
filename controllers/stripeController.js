@@ -34,9 +34,6 @@ const getSubscriptionById = async (req, res) => {
 
 
 
-const updateSubscription = async (req, res) => {
- 
-};
 
 
 const cancelSubscription = async (req, res) => {
@@ -205,17 +202,48 @@ const hasSubscription = async (req, res) => {
     }
   };
 
-  const getAllPlanInfos  = async (req, res) => {
+  const getAllPlanInfos = async (req, res) => {
     try {
       const plans = await stripe.plans.list();
-      const planInfos = plans.data.map(plan => ({
-        id: plan.id,
-        amount: plan.amount,
-        currency: plan.currency,
-        interval: plan.interval,
-        productName: plan.product.name,
+      
+      const planInfos = await Promise.all(plans.data.map(async plan => {
+        const product = await stripe.products.retrieve(plan.product);
+        return {
+          id: plan.id,
+          // amount: plan.amount,
+          currency: plan.currency,
+          interval: plan.interval,
+          productName: product.name,
+          price: plan.amount / 100,
+        };
       }));
+      
       res.json({ planInfos });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  const updateSubscription = async (req, res) => {
+    try {
+      const { customerId, currentSubscriptionId, newPlanId } = req.body;
+  
+       // Check if the customer exists
+    const customer = await stripe.customers.retrieve(customerId);
+    if (!customer) {
+      return res.status(404).json({ error: 'Customer not found.' });
+    }
+
+      // Cancel the current subscription
+      await stripe.subscriptions.del(currentSubscriptionId);
+  
+      // Create a new subscription with the updated plan
+      const newSubscription = await stripe.subscriptions.create({
+        customer: customerId,
+        items: [{ price: newPlanId }],
+      });
+  
+      res.json({ newSubscription });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
