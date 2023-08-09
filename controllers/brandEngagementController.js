@@ -50,11 +50,18 @@ const getBrandManagements = async (req, res, next) => {
       throw new Error('User ID not found');
     }
 
+    const PAGE_SIZE = 3;
+    const page = parseInt(req.query.page || "0");
+    const brandEngagementsData = await BrandEngagement.find({ createdBy: userId })
+    const total = await BrandEngagement.countDocuments({ createdBy: userId });
+
+    
     // Your logic to retrieve brand engagements based on the user ID
-    const brandEngagements = await BrandEngagement.find({ createdBy: userId });
+    const brandEngagements = await BrandEngagement.find({ createdBy: userId }).limit(PAGE_SIZE)
+    .skip(PAGE_SIZE * page);
 
     // Return the brand engagements as a response
-    res.status(200).json({ brandEngagements });
+    res.status(200).json({    total,totalPages: Math.ceil(total / PAGE_SIZE),brandEngagements });
   } catch (error) {
     next(error);
   }
@@ -106,11 +113,17 @@ const getFeedPosts = async (req, res, next) => {
       throw new Error('User ID not found');
     }
 
+    const PAGE_SIZE = 4;
+    const page = parseInt(req.query.page || "0");
+
+    const total = await FeedPosts.countDocuments({ createdBy: userId });
     // Your logic to retrieve brand engagements based on the user ID
-    const feedPosts = await FeedPosts.find({ createdBy: userId });
+    const feedPosts = await FeedPosts.find({ createdBy: userId })
+    .limit(PAGE_SIZE)
+    .skip(PAGE_SIZE * page);
 
     // Return the brand engagements as a response
-    res.status(200).json({ feedPosts });
+    res.status(200).json({total,totalPages: Math.ceil(total / PAGE_SIZE),feedPosts });
   } catch (error) {
     next(error);
   }
@@ -145,6 +158,7 @@ const deleteBrandEngagement = async (req, res) => {
 
   res.status(StatusCodes.OK).json({ msg: 'Success! brandEngagement removed' })
 }
+
 const deleteFeedPost = async (req, res) => {
   const { id: brandId } = req.params
 
