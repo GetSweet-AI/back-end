@@ -8,8 +8,8 @@ const saveBrandEngagement = async (req, res) => {
   try {
     const { Timezone, CompanySector, BrandTone, TargetAudience, PostType, postContent, WebSite, BrandName } = req.body;
 
-    if (!Timezone || !CompanySector || !BrandTone || !TargetAudience || !PostType) {
-      throw new badRequestError('Please provide all values');
+    if (!CompanySector || !BrandTone || !BrandName) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ error: 'CompanySector, BrandTone, and BrandName are required fields' });
     }
     
     const userId = req.params.userId; // Extract the userId from the route parameter
@@ -22,13 +22,12 @@ const saveBrandEngagement = async (req, res) => {
       Timezone,
       CompanySector,
       BrandTone,
-      TargetAudience,
-      PostType,
       postContent,
       WebSite,
       BrandName,
       createdBy: userId // Set createdBy to the userId
     });
+
     const updatedUser =  await User.findOneAndUpdate(
       { _id: userId },
       { $inc: { availableTokens: -1 } },
@@ -207,7 +206,5 @@ const saveFeedPost = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'An error occurred' });
   }
 };
-
-
 
 export { getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };

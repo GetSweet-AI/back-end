@@ -8,46 +8,52 @@ const BrandEngagementSchema = new mongoose.Schema({
   
     Timezone: {
     type: String,
-    required: [true, "Please provide Timezone"],
+    required: [false, "Please provide Timezone"],
     minlength: 3,
     trim: true,
+    default:""
   },
     WebSite: {
     type: String,
-    required: [true, "Please provide WebSite"],
+    required: [false, "Please provide WebSite"],
     minlength: 3,
     maxlength: 40,
     trim: true,
+    default:""
   },
     BrandName: {
     type: String,
     required: [true, "Please provide brand name"],
     minlength: 3,
     trim: true,
+    default:""
   },
   CompanySector: {
     type: String,
     required: [true, "Please provide a valid Company Sector"],
-    enum:companySectors,
-    default:'Other'
+    default:""
+    // enum:companySectors,
+    // default:'Other'
   },
   BrandTone: {
     type: String,
     required: [true, "Please provide brand tone"],
     minlength: 3,
     trim: true,
+    default:""
   },
-  TargetAudience: {
-    type: String,
-    required: [true, "Please provide Target Audience"],
-    minlength: 3,
-    trim: true,
-  },
-  PostType: {
-    type: String,
-    enum: ['Quotes', 'general-posts', 'Top-tier-lists','other'],
-    default: 'general-posts',
-  },
+  // TargetAudience: {
+  //   type: String,
+  //   required: [false, "Please provide Target Audience"],
+  //   minlength: 3,
+  //   trim: true,
+  //   default:""
+  // },
+  // PostType: {
+  //   type: String,
+  //   enum: ['Quotes', 'general-posts', 'Top-tier-lists','other'],
+  //   default: 'general-posts',
+  // },
   postContent: {
     type: String,
     required: [true, "Please provide the post content"],

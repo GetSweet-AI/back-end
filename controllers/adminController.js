@@ -84,7 +84,7 @@ const getUsers = async (req, res) => {
       const total = await FeedPosts.countDocuments({ });
       // Fetch all users
       const feedPosts = await FeedPosts.find({}).limit(PAGE_SIZE)
-      .skip(PAGE_SIZE * page);;
+      .skip(PAGE_SIZE * page);
       res.status(StatusCodes.OK).json({total,totalPages: Math.ceil(total / PAGE_SIZE),feedPosts});
     } catch (error) {
       // If an error occurs during the database query, return an appropriate error message
@@ -109,7 +109,7 @@ const getUsers = async (req, res) => {
         return res.status(StatusCodes.FORBIDDEN).json({ error: "You are not authorized to perform this action" });
       }
 
-      const PAGE_SIZE = 4;
+      const PAGE_SIZE = 6;
       const page = parseInt(req.query.page || "0");
       // Your logic to retrieve brand engagements based on the user ID
       const brandEngagements = await BrandEngagement.find({})
