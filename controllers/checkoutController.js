@@ -44,9 +44,9 @@ export async function checkoutController(req, res) {
     const checkoutSession = await stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: 'subscription',
-      success_url: `https://64cd44ef17e8c4435e48a1cc--classy-fox-62c2f2.netlify.app/success`,
+      success_url: `https://64d9134a555a7638c459c106--gleaming-pithivier-24c059.netlify.app/success`,
     //   success_url: `${protocol}${host}/success`,
-      cancel_url: `https://64cd44ef17e8c4435e48a1cc--classy-fox-62c2f2.netlify.app/payment`,
+      cancel_url: `https://64d9134a555a7638c459c106--gleaming-pithivier-24c059.netlify.app/payment`,
       payment_method_types: ['card'],
       customer: customer.id,
       metadata: {
