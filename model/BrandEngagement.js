@@ -9,15 +9,15 @@ const BrandEngagementSchema = new mongoose.Schema({
     Timezone: {
     type: String,
     required: [false, "Please provide Timezone"],
-    minlength: 3,
+    // minlength: 3,
     trim: true,
     default:""
   },
     WebSite: {
     type: String,
     required: [false, "Please provide WebSite"],
-    minlength: 3,
-    maxlength: 40,
+    // minlength: 3,
+    // maxlength: 40,
     trim: true,
     default:""
   },
