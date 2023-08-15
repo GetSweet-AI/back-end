@@ -13,7 +13,7 @@ The response should be formatted in SEO-friendly HTML,
 limited to the following HTML tags: p, h1, h2, h3, h4, h5, h6, strong, i, ul, li, ol.
 `
 
-const promptUpdated =`Make a summary of the company based on the following inputs : 
+const promptUpdated =`Make a 50 word summary of the company based on the following inputs : 
   Name : ${brandName},
   Sector : ${companySector},
   Tone : ${tone}
