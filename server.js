@@ -7,6 +7,7 @@ import cors from "cors";
 // Allow requests from your frontend origin
 const allowedOrigins = [
   'http://app.getsweet.ai',
+  'https://app.getsweet.ai',
   'http://localhost:5000',
   'https://seashell-app-8amlb.ondigitalocean.app',
   'http://localhost:5173',
