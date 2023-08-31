@@ -3,27 +3,27 @@ const app = express();
 
 import morgan from "morgan";
 import cors from "cors";
-// app.use(cors());
+app.use(cors());
 // Allow requests from your frontend origin
-const allowedOrigins = [
-  'http://app.getsweet.ai',
-  'https://app.getsweet.ai',
-  'http://localhost:5000',
-  'https://seashell-app-8amlb.ondigitalocean.app',
-  'http://localhost:5173',
-  'https://seashell-app-2-n2die.ondigitalocean.app'
-  // For local development
-];
+// const allowedOrigins = [
+//   'http://app.getsweet.ai',
+//   'https://app.getsweet.ai',
+//   'http://localhost:5000',
+//   'https://seashell-app-8amlb.ondigitalocean.app',
+//   'http://localhost:5173',
+//   'https://seashell-app-2-n2die.ondigitalocean.app'
+//   // For local development
+// ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     if (allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   }
+// }));
 
 app.use((req, res, next) => {
   res.setHeader('Cross-Origin-Opener-Policy', 'unsafe-none');
