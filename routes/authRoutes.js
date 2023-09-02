@@ -7,7 +7,7 @@ import { register, login,
      updateUser, sendVerificationCode,
       verifyEmail, resetPassword, 
       deleteUser, getUserById,
-       confirmUserEmail, sendEmailVerification, updateAvailableTokens, authenticateUser, sendNotificationOnPostGenerated
+       confirmUserEmail, sendEmailVerification, updateAvailableTokens, authenticateUser, sendNotificationOnPostGenerated, subscribeToNewsLetter
      } from "../controllers/authController.js";
 
 router.route("/register").post(register);
@@ -30,5 +30,8 @@ router.post('/users/:userId/send-email-verification', sendEmailVerification);
 
 //Google auth
 router.post('/googlelogin', authenticateUser);
+
+//Subscribe to news letter
+router.route("/subscribe").post(subscribeToNewsLetter);
 
 export default router;

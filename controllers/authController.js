@@ -8,7 +8,10 @@ import { OAuth2Client } from "google-auth-library";
 
 import dotenv from "dotenv";
 import DeletedUser from "../model/DeletedUser.js";
+import SubscribedUser from "../model/SubscribedUser.js";
 dotenv.config(); 
+
+
 
 const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
 
@@ -67,15 +70,15 @@ const login = async (req, res) => {
   if (!userData.isEmailConfirmed) {
     throw new UnAuthenticatedError("Email not confirmed. Please verify your email.");
   }
+
   const isPasswordCorrect = await user.comparePassword(password);
   if (!isPasswordCorrect) {
     throw new UnAuthenticatedError("Invalid Credentials");
-  
   }
 
   const token = user.createJWT();
   user.password = undefined;
-  res.status(StatusCodes.OK).json({ user, token, location: user.location });
+  res.status(StatusCodes.OK).json({ user, token });
 };
 
 const updateUser = async (req, res) => {
@@ -137,6 +140,8 @@ const deleteUser = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    //Check if the user is subscribed then delete the subscription before deleting the user
+
     // Create a DeletedUser document
     await DeletedUser.create({
       email: user.email,
@@ -144,8 +149,6 @@ const deleteUser = async (req, res) => {
 
     // Delete user
     const deletedUser = await User.findOneAndDelete({ _id: userId });
-
-
 
     if (!deletedUser) {
       return res.status(404).json({ error: 'User not found' });
@@ -336,8 +339,12 @@ const getUserById = async (req, res) => {
       return res.status(StatusCodes.NOT_FOUND).json({ error: "User not found" });
     }
 
+    console.log("user :"+JSON.stringify(user))
     // Exclude sensitive data like password before sending the response
     user.password = undefined;
+    if(user?.subscriptionId){
+      await stripe.subscriptions.cancel(subscriptionId)
+    }
 
     res.status(StatusCodes.OK).json({ user });
   } catch (error) {
@@ -562,5 +569,25 @@ const authenticateUser = async (req, res) => {
   console.log("33")
 };
 
+const subscribeToNewsLetter = async (req, res) => {
+  const {email} = req.body;
+  if (!email  ) {
+    throw new badRequestError("Please provide your email");
+  }
 
-export { sendNotificationOnPostGenerated,authenticateUser,register, login, updateUser,sendVerificationCode,verifyEmail, resetPassword,deleteUser,getUserById,confirmUserEmail,sendEmailVerification,updateAvailableTokens };
+  const userAlreadyExists = await SubscribedUser.findOne({ email });
+  if (userAlreadyExists) {
+    throw new badRequestError("Email already in use");
+  }
+
+   let user = await SubscribedUser.create({ email });
+  
+  //try and cash should be implemented (but we use instead expr-async-err)
+
+  res.status(StatusCodes.CREATED).json({
+    user,
+  });
+};
+
+
+export { subscribeToNewsLetter,sendNotificationOnPostGenerated,authenticateUser,register, login, updateUser,sendVerificationCode,verifyEmail, resetPassword,deleteUser,getUserById,confirmUserEmail,sendEmailVerification,updateAvailableTokens };
