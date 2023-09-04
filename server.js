@@ -8,10 +8,10 @@ app.use(cors());
 // const allowedOrigins = [
 //   'http://app.getsweet.ai',
 //   'https://app.getsweet.ai',
-//   'https://seashell-app-2-n2die.ondigitalocean.app',
-//   'https://seashell-app-2-n2die.ondigitalocean.app',
+//   'http://localhost:5000',
+//   'http://localhost:5000',
 //   'http://localhost:5173',
-//   'https://seashell-app-2-n2die.ondigitalocean.app'
+//   'http://localhost:5000'
 //   // For local development
 // ];
 
