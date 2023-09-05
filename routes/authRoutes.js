@@ -7,7 +7,7 @@ import { register, login,
      updateUser, sendVerificationCode,
       verifyEmail, resetPassword, 
       deleteUser, getUserById,
-       confirmUserEmail, sendEmailVerification, updateAvailableTokens, authenticateUser, sendNotificationOnPostGenerated, subscribeToNewsLetter
+       confirmUserEmail, sendEmailVerification, updateAvailableTokens, authenticateUser, sendWelcomeMessage, subscribeToNewsLetter
      } from "../controllers/authController.js";
 
 router.route("/register").post(register);
@@ -15,7 +15,7 @@ router.route("/login").post(login);
 router.put('/update/:userId', updateUser);
 router.put('/update-available-tokens/:userId', updateAvailableTokens);
 router.route("/send-verification-code").post(sendVerificationCode);
-router.route("/send-notification-email").post(sendNotificationOnPostGenerated);
+router.route("/send-welcome-email").post(sendWelcomeMessage);
 
 // Route for verifying email
 router.post('/verify-email', verifyEmail);
