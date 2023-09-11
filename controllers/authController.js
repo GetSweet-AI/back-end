@@ -82,9 +82,9 @@ const login = async (req, res) => {
   res.status(StatusCodes.OK).json({ user, token });
 };
 
-const updateUser = async (req, res) => {
+const updateEmail = async (req, res) => {
   try {
-    const { fullName, email, company } = req.body;
+    const {email } = req.body;
     const { userId } = req.params;
 
     // check if the email do not exist in db
@@ -95,7 +95,7 @@ const updateUser = async (req, res) => {
     // Update user information
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
-      { $set: { fullName, email, company } },
+      { $set: { email} },
       { returnOriginal: false }
     );
 
@@ -109,6 +109,30 @@ const updateUser = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+const updateNameAndCompany = async (req, res) => {
+  try {
+    const { fullName, company } = req.body;
+    const { userId } = req.params;
+
+    // Update user information
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { fullName, company } },
+      { returnOriginal: false }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ user: updatedUser });
+  } catch (error) {
+    console.error('Error updating infos:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 const updateAvailableTokens = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -346,9 +370,9 @@ const getUserById = async (req, res) => {
     console.log("user :"+JSON.stringify(user))
     // Exclude sensitive data like password before sending the response
     user.password = undefined;
-    if(user?.subscriptionId){
-      await stripe.subscriptions.cancel(subscriptionId)
-    }
+    // if(user?.subscriptionId){
+    //   await stripe.subscriptions.cancel(subscriptionId)
+    // }
 
     res.status(StatusCodes.OK).json({ user });
   } catch (error) {
@@ -356,8 +380,6 @@ const getUserById = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
   }
 };
-
-
 
 
 
@@ -594,65 +616,64 @@ const confirmUserEmail = async (req, res) => {
 };
 
 
-
-export { subscribeToNewsLetter,sendWelcomeMessage,authenticateUser,register, login, updateUser,sendVerificationCode,verifyEmail, resetPassword,deleteUser,getUserById,confirmUserEmail,sendEmailVerification,updateAvailableTokens };
-
-
-
-
-
-
-
-
-
-
-
-// const sendEmailVerification = async (req, res) => {
-//   try {
-//     const { email } = req.body;
-//     const { userId } = req.params;
+const sendEmailVerification = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const { userId } = req.params;
     
-//     // Check if email is provided
-//     if (!email) {
-//       return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Email is required' });
-//     }
+    // Check if email is provided
+    if (!email) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Email is required' });
+    }
 
-//     // Generate the verification link
-//     const verificationLink = `http://app.getsweet.ai/confirm-email/${userId}`;
+    // Generate the verification link
+    const verificationLink = `http://app.getsweet.ai/confirm-email/${userId}`;
 
-//     // Send the verification link to the user's email
-//     const transporter = nodemailer.createTransport({
-//       service: 'gmail',
-//       auth: {
-//         user: 'sales@getsweet.ai',
-//         pass: 'bripwwstustvdiei',
-//       },
-//     });
+    // Send the verification link to the user's email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'sales@getsweet.ai',
+        pass: 'bripwwstustvdiei',
+      },
+    });
 
-//     const mailOptions = {
-//       from: 'sales@getsweet.ai',
-//       to: email,
-//       subject: 'Email Confirmation',
-//       html: `
-//         <div style="background-color: #f2f2f2; padding: 20px;">
-//           <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-//             <h1 style="text-align: center; color: #333; font-size: 24px; margin-bottom: 20px;">Email Confirmation</h1>
-//             <p style="font-size: 16px; line-height: 1.5; color: #555;">Thank you for registering. To confirm your email, please click the following link:</p>
-//             <div style="text-align: center; margin: 30px 0;">
-//               <a href="${verificationLink}" style="display: inline-block; background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Confirm Email</a>
-//             </div>
-//             <p style="font-size: 16px; line-height: 1.5; color: #555;">By clicking the link above, you will confirm your email.</p>
-//             <p style="font-size: 14px; line-height: 1.2; color: #888; margin-top: 40px; text-align: center;">This email was sent by the GetSweet.AI Team.</p>
-//           </div>
-//         </div>
-//       `,
-//     };
+    const mailOptions = {
+      from: 'sales@getsweet.ai',
+      to: email,
+      subject: 'Email Confirmation',
+      html: `
+        <div style="background-color: #f2f2f2; padding: 20px;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            <h1 style="text-align: center; color: #333; font-size: 24px; margin-bottom: 20px;">Email Confirmation</h1>
+            <p style="font-size: 16px; line-height: 1.5; color: #555;">Thank you for registering. To confirm your email, please click the following link:</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${verificationLink}" style="display: inline-block; background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Confirm Email</a>
+            </div>
+            <p style="font-size: 16px; line-height: 1.5; color: #555;">By clicking the link above, you will confirm your email.</p>
+            <p style="font-size: 14px; line-height: 1.2; color: #888; margin-top: 40px; text-align: center;">This email was sent by the GetSweet.AI Team.</p>
+          </div>
+        </div>
+      `,
+    };
 
-//     await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
 
-//     res.status(StatusCodes.OK).json({ message: 'Email verification link sent successfully' });
-//   } catch (error) {
-//     // Handle error
-//     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
-//   }
-// };
+    res.status(StatusCodes.OK).json({ message: 'Email verification link sent successfully' });
+  } catch (error) {
+    // Handle error
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
+  }
+};
+
+
+export { updateNameAndCompany,subscribeToNewsLetter,sendWelcomeMessage,authenticateUser,register, login, updateEmail,sendVerificationCode,verifyEmail, resetPassword,deleteUser,getUserById,confirmUserEmail,sendEmailVerification,updateAvailableTokens };
+
+
+
+
+
+
+
+
+

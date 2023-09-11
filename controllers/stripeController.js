@@ -32,10 +32,6 @@ const getSubscriptionById = async (req, res) => {
   }
 };
 
-
-
-
-
 const cancelSubscription = async (req, res) => {
   const { subscriptionId } = req.body;
 
