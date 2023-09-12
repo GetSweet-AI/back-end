@@ -2,6 +2,17 @@ import { StatusCodes } from "http-status-codes";
 import User from "../model/User.js";
 import FeedPosts from "../model/FeedPosts.js";
 import BrandEngagement from "../model/BrandEngagement.js";
+import { badRequestError } from "../errors/index.js";
+
+import dotenv from "dotenv";
+
+import stripeInit from 'stripe';
+import DeletedUser from "../model/DeletedUser.js";
+dotenv.config(); 
+
+
+const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
+
 
 const getUsers = async (req, res) => {
     try {
@@ -125,8 +136,46 @@ const getUsers = async (req, res) => {
     }
   };
 
+  const createUser = async (req, res) => {
+    const { fullName, email, password, company,role } = req.body;
+    if (!fullName || !email || !password || !company ) {
+      throw new badRequestError("Please provide all values");
+    }
   
+    const userAlreadyExists = await User.findOne({ email });
+    if (userAlreadyExists) {
+      throw new badRequestError("Email already in use");
+    }
+    let customer;
+    // Check if the customer exists
+    const customers = await stripe.customers.list({ email: email, limit: 1 });
+    if(customers.data.length>0){
+    customer = customers.data[0]
+    }else{
+      customer = await stripe.customers.create({
+        name: fullName,
+        email: email,
+        description: 'New Customer'
+      });
+    }
+  
+    const userAlreadySignedIn = await DeletedUser.findOne({ email });
+    let user;
+    if(userAlreadySignedIn){
+        user = await User.create({ fullName, email, password,company,role,customerId:customer.id,availableTokens:0,isEmailConfirmed:true });
+    }else{
+      user = await User.create({ fullName, email, password,company,role,customerId:customer.id,isEmailConfirmed:true });
+    }
+    //try and cash should be implemented (but we use instead expr-async-err)
+     
+  
+    const token = user.createJWT();
+    res.status(StatusCodes.CREATED).json({
+      user,
+      token
+    });
+  };
   
   
 
-export { getUsers,updateUserRole,getFeedPostsForAdmin,getAllBrandManagements };
+export { getUsers,updateUserRole,getFeedPostsForAdmin,getAllBrandManagements,createUser };

@@ -21,17 +21,22 @@ const promptUpdated =`Make a 50 word summary of the company based on the followi
 The response should be formatted in SEO-friendly HTML, 
 limited to the following HTML tags: p, h1, h2, h3, h4, h5, h6, strong, i, ul, li, ol.
 ` 
+const promptUpdatedTwo =`Create a concise 50-word summary of ${brandName}, a ${companySector} company known for its ${tone} approach. In the world of ${companySector}, ${brandName} stands out with its unique blend of innovation and dedication. Discover more about their exceptional offerings and commitment to excellence.
+
+The response should be formatted in SEO-friendly HTML, 
+limited to the following HTML tags: p, h1, h2, h3, h4, h5, h6, strong, i, ul, li, ol.
+` 
 
   const postContentResult = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
     messages: [
       {
         role: 'system',
-        content: 'You are a brand engagement post generator.',
+        content: 'You serve as a brand engagement post generator.',
       },
       {
         role: 'user',
-        content: promptUpdated,
+        content: promptUpdatedTwo,
       },
     ],
     temperature: 0,
