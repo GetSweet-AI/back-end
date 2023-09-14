@@ -44,9 +44,9 @@ export async function checkoutController(req, res) {
     const checkoutSession = await stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: 'subscription',
-      success_url: `http://localhost:5173/success`,
+      success_url: `https://app.getsweet.ai/success`,
     //   success_url: `${protocol}${host}/success`,
-      cancel_url: `http://localhost:5173/payment`,
+      cancel_url: `https://app.getsweet.ai/payment`,
       payment_method_types: ['card'],
       customer: customer.id,
       metadata: {
