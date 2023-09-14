@@ -23,7 +23,7 @@ router.post('/verify-email', verifyEmail);
 router.post('/reset-password', resetPassword);
 router.get('/users/:userId', getUserById);
 
-router.route('/users/:userId').delete(deleteUser);
+router.delete('/users/:userId',deleteUser);
 
 // Route to confirm user email
 router.put("/users/confirm-email/:userId", confirmUserEmail);

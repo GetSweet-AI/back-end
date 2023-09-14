@@ -168,9 +168,13 @@ const deleteUser = async (req, res) => {
     //Check if the user is subscribed then delete the subscription before deleting the user
 
     // Create a DeletedUser document
-    await DeletedUser.create({
-      email: user.email,
-    });
+    // const DelUser = await DeletedUser.findOne({ email: email });
+    // if(!DelUser){
+    //   await DeletedUser.create({
+    //   email: user.email,
+    // });
+    // }
+    
 
     // Delete user
     const deletedUser = await User.findOneAndDelete({ _id: userId });

@@ -3,6 +3,8 @@ import stripeInit from 'stripe';
 import dotenv from "dotenv";
 dotenv.config(); 
 
+import User from "../model/User.js";
+
 const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
 
 const getSubscriptions = async (req, res) => {
@@ -43,6 +45,10 @@ const cancelSubscription = async (req, res) => {
     if (subscription.status === 'active') {
       // Cancel the subscription in Stripe
       await stripe.subscriptions.cancel(subscriptionId)
+
+      //Switch plan to none
+      //  Use the `update` method to update the user's Plan
+      await User.updateOne({ subscriptionId }, { $set: { Plan: 'none' } });
 
       res.status(200).json({ message: 'Subscription canceled successfully.' });
     } else {
