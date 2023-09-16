@@ -92,7 +92,6 @@ const UserSchema = new mongoose.Schema({
       enum:["payment_succeeded","payment_failed","none"],
       default:"none"
     }
-
     
 });
 

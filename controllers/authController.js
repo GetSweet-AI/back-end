@@ -110,6 +110,24 @@ const updateEmail = async (req, res) => {
   }
 };
 
+const updateNotificationMessage = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const {notificationMessage} = req.body;
+    // Update user information
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { notificationMessage:notificationMessage} },
+      { returnOriginal: false }
+    );
+
+    res.status(200).json({ user: updatedUser });
+  } catch (error) {
+    console.error('Error updating notificationMessage:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 const updateNameAndCompany = async (req, res) => {
   try {
     const { fullName, company } = req.body;
@@ -227,7 +245,7 @@ const sendVerificationCode = async (req, res) => {
     });
     console.log('after');
 
-    
+
 
     const mailOptions = {
       from: 'sales@getsweet.ai',
@@ -672,7 +690,7 @@ const sendEmailVerification = async (req, res) => {
 };
 
 
-export { updateNameAndCompany,subscribeToNewsLetter,sendWelcomeMessage,authenticateUser,register, login, updateEmail,sendVerificationCode,verifyEmail, resetPassword,deleteUser,getUserById,confirmUserEmail,sendEmailVerification,updateAvailableTokens };
+export { updateNotificationMessage,updateNameAndCompany,subscribeToNewsLetter,sendWelcomeMessage,authenticateUser,register, login, updateEmail,sendVerificationCode,verifyEmail, resetPassword,deleteUser,getUserById,confirmUserEmail,sendEmailVerification,updateAvailableTokens };
 
 
 
