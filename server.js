@@ -8,10 +8,10 @@ app.use(cors());
 // const allowedOrigins = [
 //   'http://app.getsweet.ai',
 //   'https://app.getsweet.ai',
-//   'https://seashell-app-2-n2die.ondigitalocean.app',
-//   'https://seashell-app-2-n2die.ondigitalocean.app',
+//   'http://localhost:5000',
+//   'http://localhost:5000',
 //   'http://localhost:5173',
-//   'https://seashell-app-2-n2die.ondigitalocean.app'
+//   'http://localhost:5000'
 //   // For local development
 // ];
 
@@ -147,7 +147,10 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
               { customerId },
               { 
                 $inc: { availableTokens: number_of_tokens }, 
-                $set: { Plan: plan,invoiceUrl:dataObject.hosted_invoice_url,subscriptionId:dataObject['subscription'],planId:event.data.object.lines.data[0].plan.id }
+                $set: {Plan: plan,invoiceUrl:dataObject.hosted_invoice_url
+                  ,subscriptionId:dataObject['subscription'],
+                  planId:event.data.object.lines.data[0].plan.id,
+                  notificationMessage:"payment_succeeded" }
             },
               { returnOriginal: false }
             );
@@ -161,6 +164,14 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
               Use this webhook to notify your user that their payment has
               failed and to retrieve new card details.
             */
+            // Update user information     $set:Plan: "basic" },
+            await User.findOneAndUpdate(
+              { customerId },
+              { 
+                $set: {notificationMessage:"payment_failed" }
+            },
+              { returnOriginal: false }
+            );
             console.log(`invoice.payment_failed: ${dataObject.status}`);
             break;
           case 'customer.subscription.created':

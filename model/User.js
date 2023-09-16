@@ -85,7 +85,14 @@ const UserSchema = new mongoose.Schema({
       type:String,
       enum:["Google","Normal"],
       default:"Normal"
+    },
+    notificationMessage:{
+      type:String,
+      required: true,
+      enum:["payment_succeeded","payment_failed","none"],
+      default:"none"
     }
+
     
 });
 

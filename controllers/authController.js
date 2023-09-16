@@ -227,6 +227,7 @@ const sendVerificationCode = async (req, res) => {
     });
     console.log('after');
 
+    
 
     const mailOptions = {
       from: 'sales@getsweet.ai',
