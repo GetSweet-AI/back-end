@@ -54,7 +54,7 @@ export async function checkoutController(req, res) {
       },
     });
 
-    //update based on customer id existing
+    //update based on customer id existing ok
 
     //  // Update user information
     await User.findOneAndUpdate(
