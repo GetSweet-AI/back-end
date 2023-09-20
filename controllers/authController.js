@@ -1,24 +1,25 @@
 import User from "../model/User.js";
 import { StatusCodes } from "http-status-codes";
-import { badRequestError, notFoundError, UnAuthenticatedError } from "../errors/index.js";
+import {
+  badRequestError,
+  notFoundError,
+  UnAuthenticatedError,
+} from "../errors/index.js";
 import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
-import stripeInit from 'stripe';
+import stripeInit from "stripe";
 import { OAuth2Client } from "google-auth-library";
 
 import dotenv from "dotenv";
 import DeletedUser from "../model/DeletedUser.js";
 import SubscribedUser from "../model/SubscribedUser.js";
-dotenv.config(); 
-
-
+dotenv.config();
 
 const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
 
-
 const register = async (req, res) => {
-  const { fullName, email, password, company,role } = req.body;
-  if (!fullName || !email || !password || !company ) {
+  const { fullName, email, password, company, role } = req.body;
+  if (!fullName || !email || !password || !company) {
     throw new badRequestError("Please provide all values");
   }
 
@@ -29,30 +30,44 @@ const register = async (req, res) => {
   let customer;
   // Check if the customer exists
   const customers = await stripe.customers.list({ email: email, limit: 1 });
-  if(customers.data.length>0){
-  customer = customers.data[0]
-  }else{
+  if (customers.data.length > 0) {
+    customer = customers.data[0];
+  } else {
     customer = await stripe.customers.create({
       name: fullName,
       email: email,
-      description: 'New Customer'
+      description: "New Customer",
     });
   }
 
   const userAlreadySignedIn = await DeletedUser.findOne({ email });
   let user;
-  if(userAlreadySignedIn){
-      user = await User.create({ fullName, email, password,company,role,customerId:customer.id,availableTokens:0 });
-  }else{
-    user = await User.create({ fullName, email, password,company,role,customerId:customer.id });
+  if (userAlreadySignedIn) {
+    user = await User.create({
+      fullName,
+      email,
+      password,
+      company,
+      role,
+      customerId: customer.id,
+      availableTokens: 0,
+    });
+  } else {
+    user = await User.create({
+      fullName,
+      email,
+      password,
+      company,
+      role,
+      customerId: customer.id,
+    });
   }
   //try and cash should be implemented (but we use instead expr-async-err)
-   
 
   const token = user.createJWT();
   res.status(StatusCodes.CREATED).json({
     user,
-    token
+    token,
   });
 };
 
@@ -69,7 +84,9 @@ const login = async (req, res) => {
   }
 
   if (!userData.isEmailConfirmed) {
-    throw new UnAuthenticatedError("Email not confirmed. Please verify your email.");
+    throw new UnAuthenticatedError(
+      "Email not confirmed. Please verify your email."
+    );
   }
 
   const isPasswordCorrect = await user.comparePassword(password);
@@ -90,7 +107,7 @@ const updateUser = async (req, res) => {
     // check if the email do not exist in db
     const userAlreadyExists = await User.findOne({ email });
     if (userAlreadyExists) {
-      return res.status(400).json({ error: 'Email already in use' });
+      return res.status(400).json({ error: "Email already in use" });
     }
     // Update user information
     const updatedUser = await User.findOneAndUpdate(
@@ -100,13 +117,13 @@ const updateUser = async (req, res) => {
     );
 
     if (!updatedUser) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     res.status(200).json({ user: updatedUser });
   } catch (error) {
-    console.error('Error updating user:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 const updateAvailableTokens = async (req, res) => {
@@ -121,13 +138,13 @@ const updateAvailableTokens = async (req, res) => {
     );
 
     if (!updatedUser) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     res.status(200).json({ user: updatedUser });
   } catch (error) {
-    console.error('Error updating user:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -138,7 +155,7 @@ const deleteUser = async (req, res) => {
     // Check if the user exists
     const user = await User.findOne({ _id: userId });
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     //Check if the user is subscribed then delete the subscription before deleting the user
@@ -152,13 +169,13 @@ const deleteUser = async (req, res) => {
     const deletedUser = await User.findOneAndDelete({ _id: userId });
 
     if (!deletedUser) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
-    res.status(200).json({ message: 'User deleted successfully' });
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    console.error('Error deleting user:', error);
-    res.status(500).json({ error: 'Error deleting user' });
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Error deleting user" });
   }
 };
 
@@ -173,11 +190,13 @@ const sendVerificationCode = async (req, res) => {
     const { email } = req.body;
     // Check if email is provided
     if (!email) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Email is required' });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ error: "Email is required" });
     }
 
     // Save the verification code in the database associated with the user's email
-// Update the user in the database with the verification code
+    // Update the user in the database with the verification code
     const user = await User.findOneAndUpdate(
       { email },
       { verificationCode },
@@ -188,22 +207,21 @@ const sendVerificationCode = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
     // Send the verification code to the user's email
-    console.log('before');
+    console.log("before");
     // Create a transporter
     const transporter = nodemailer.createTransport({
-      service:'gmail',
+      service: "gmail",
       auth: {
-        user: 'sales@getsweet.ai',
-        pass: 'bripwwstustvdiei',
+        user: "sales@getsweet.ai",
+        pass: "bripwwstustvdiei",
       },
     });
-    console.log('after');
-
+    console.log("after");
 
     const mailOptions = {
-      from: 'sales@getsweet.ai',
+      from: "sales@getsweet.ai",
       to: email,
-      subject: 'Password Reset Verification',
+      subject: "Password Reset Verification",
       html: `
       <div style="background-color: #f2f2f2; padding: 20px;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
@@ -220,11 +238,15 @@ const sendVerificationCode = async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('after 2');
-    res.status(StatusCodes.OK).json({ message: 'Verification code sent successfully' });
+    console.log("after 2");
+    res
+      .status(StatusCodes.OK)
+      .json({ message: "Verification code sent successfully" });
   } catch (error) {
     // Handle error
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Internal server error" });
   }
 };
 const sendWelcomeMessage = async (req, res) => {
@@ -232,24 +254,25 @@ const sendWelcomeMessage = async (req, res) => {
     const { email } = req.body;
     // Check if email is provided
     if (!email) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Email is required' });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ error: "Email is required" });
     }
-    
+
     // Send the verification code to the user's email
     // Create a transporter
     const transporter = nodemailer.createTransport({
-      service:'gmail',
+      service: "gmail",
       auth: {
-        user: 'sales@getsweet.ai',
-        pass: 'bripwwstustvdiei',
+        user: "sales@getsweet.ai",
+        pass: "bripwwstustvdiei",
       },
     });
 
-
     const mailOptions = {
-      from: 'sales@getsweet.ai',
+      from: "sales@getsweet.ai",
       to: email,
-      subject: 'You GetSweet.AI Account has been created ',
+      subject: "You GetSweet.AI Account has been created ",
       html: `
       <div style="background-color: #f2f2f2; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
@@ -270,10 +293,12 @@ const sendWelcomeMessage = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
     // console.log('after 2');
-    res.status(StatusCodes.OK).json({ message: 'Welcome message was sent' });
+    res.status(StatusCodes.OK).json({ message: "Welcome message was sent" });
   } catch (error) {
     // Handle error
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Internal server error" });
   }
 };
 
@@ -285,21 +310,21 @@ const verifyEmail = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Compare the verification code
     if (user.verificationCode !== verificationCode) {
-      return res.status(400).json({ error: 'Invalid verification code' });
+      return res.status(400).json({ error: "Invalid verification code" });
     }
 
     // Verification successful
     // You can perform additional actions here, such as updating the user's password
 
-    res.status(200).json({ message: 'Email verification successful' });
+    res.status(200).json({ message: "Email verification successful" });
   } catch (error) {
-    console.error('Error verifying email:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error verifying email:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -312,7 +337,9 @@ const resetPassword = async (req, res) => {
 
     // If user doesn't exist, return an error
     if (!user) {
-      return res.status(StatusCodes.NOT_FOUND).json({ error: "User not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ error: "User not found" });
     }
 
     // Generate a hashed password for the new password
@@ -326,10 +353,14 @@ const resetPassword = async (req, res) => {
     );
 
     // Optionally, you can respond with the updated user object or a success message
-    res.status(StatusCodes.OK).json({ message: "Password reset successful", user: updatedUser });
+    res
+      .status(StatusCodes.OK)
+      .json({ message: "Password reset successful", user: updatedUser });
   } catch (error) {
     // Handle error
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Internal server error" });
   }
 };
 
@@ -340,29 +371,31 @@ const getUserById = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(StatusCodes.NOT_FOUND).json({ error: "User not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ error: "User not found" });
     }
 
-    console.log("user :"+JSON.stringify(user))
+    console.log("user :" + JSON.stringify(user));
     // Exclude sensitive data like password before sending the response
     user.password = undefined;
-    if(user?.subscriptionId){
-      await stripe.subscriptions.cancel(subscriptionId)
+    if (user?.subscriptionId) {
+      await stripe.subscriptions.cancel(subscriptionId);
     }
 
     res.status(StatusCodes.OK).json({ user });
   } catch (error) {
     console.error("Error retrieving user by ID:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Internal server error" });
   }
 };
 
-
-
-
-
 // handles google login
-const clientId = new OAuth2Client("181452812828-uslduiqspmak4k0red5o3he2qphqa234.apps.googleusercontent.com");
+const clientId = new OAuth2Client(
+  "181452812828-uslduiqspmak4k0red5o3he2qphqa234.apps.googleusercontent.com"
+);
 //  const authenticateUser = (req, res) => {
 //   const { idToken } = req.body;
 
@@ -422,89 +455,114 @@ const clientId = new OAuth2Client("181452812828-uslduiqspmak4k0red5o3he2qphqa234
 
 const authenticateUser = async (req, res) => {
   const { idToken } = req.body;
-   console.log("idToken : " + idToken)
+  console.log("idToken : " + idToken);
   if (idToken) {
+    clientId
+      .verifyIdToken({
+        idToken,
+        audience:
+          "181452812828-uslduiqspmak4k0red5o3he2qphqa234.apps.googleusercontent.com",
+      })
 
-    clientId.verifyIdToken({ idToken, audience: "181452812828-uslduiqspmak4k0red5o3he2qphqa234.apps.googleusercontent.com" })
-   
-          .then(async response => {
-              // console.log(response)
-              const { email_verified, email, name, picture } = response.payload
-              if (email_verified) {
-                console.log(JSON.stringify(response.payload))
-                console.log("Two")
-                const user = await User.findOne({ email });
-                if (user) {
-                  // user.json({})
-                  // window.location.href = "http://localhost:5173/brand-engagement-builder"
-                  // return response?.json(data?.user)
-                  // return response
-                  // console.log(json({
-                  //   user
-                  // }))
-                  res.status(StatusCodes.CREATED).json({
-                    user
-                  });
-                } else {
-                  let customer;
-                // Check if the customer exists
-                const customers = await stripe.customers.list({ email: email, limit: 1 });
-                if(customers.data.length>0){
-                customer = customers.data[0]
-                }else{
-                  customer = await stripe.customers.create({
-                    name: name,
-                    email: email,
-                    description: 'New Customer'
-                  }); 
-                  //try and cash should be implemented (but we use instead expr-async-err)
-                 
-                }
-                let password = email + clientId
-                
-                const userAlreadySignedIn = await DeletedUser.findOne({ email });
-                let user;
-                if(userAlreadySignedIn){
-                    user = await User.create({email,password, fullName:name,picture,customerId:customer.id,isEmailConfirmed:true,signUpMode:"Google",availableTokens:0 });
-                }else{
-                  user = await User.create({email,password, fullName:name,picture,customerId:customer.id,isEmailConfirmed:true,signUpMode:"Google" });
-                }
-                
-                // await User.create({email,password, fullName:name,picture,customerId:customer.id,isEmailConfirmed:true,signUpMode:"Google" });
-                res.status(StatusCodes.CREATED).json({
-                  user,
-                });
-                }
+      .then(async (response) => {
+        // console.log(response)
+        const { email_verified, email, name, picture } = response.payload;
+        if (email_verified) {
+          console.log(JSON.stringify(response.payload));
+          console.log("Two");
+          const user = await User.findOne({ email });
+          if (user) {
+            // user.json({})
+            // window.location.href = "http://localhost:5173/brand-engagement-builder"
+            // return response?.json(data?.user)
+            // return response
+            // console.log(json({
+            //   user
+            // }))
+            res.status(StatusCodes.CREATED).json({
+              user,
+            });
+          } else {
+            let customer;
+            // Check if the customer exists
+            const customers = await stripe.customers.list({
+              email: email,
+              limit: 1,
+            });
+            if (customers.data.length > 0) {
+              customer = customers.data[0];
+            } else {
+              customer = await stripe.customers.create({
+                name: name,
+                email: email,
+                description: "New Customer",
+              });
+              //try and cash should be implemented (but we use instead expr-async-err)
+            }
+            let password = email + clientId;
 
-              //SignUp user if not exist else SignIn
-              //Handle email not verified
-                
-                  // User.findOne({ email }).exec((err, user) => {
-                  //     if(user){
-                  //         return res?.json(user)
-                  //     }
-                  //     else{
-                  //         let password = email + clientId
-                  //         let newUser = new User({email,name,picture,password});
-                  //         newUser.save((err,data)=>{
-                  //             if(err){
-                  //                 return res.status.json({error:"mongodb error"})
-                  //             }
-                  //             res.json(data)
-                  //         })
-                  //     }
-                  // })
-                  // registerUser({email, name, picture})
-              }
-          })
-          .catch(err => { console.log(err) })
+            const userAlreadySignedIn = await DeletedUser.findOne({ email });
+            let user;
+            if (userAlreadySignedIn) {
+              user = await User.create({
+                email,
+                password,
+                fullName: name,
+                picture,
+                customerId: customer.id,
+                isEmailConfirmed: true,
+                signUpMode: "Google",
+                availableTokens: 0,
+              });
+            } else {
+              user = await User.create({
+                email,
+                password,
+                fullName: name,
+                picture,
+                customerId: customer.id,
+                isEmailConfirmed: true,
+                signUpMode: "Google",
+              });
+            }
+
+            // await User.create({email,password, fullName:name,picture,customerId:customer.id,isEmailConfirmed:true,signUpMode:"Google" });
+            res.status(StatusCodes.CREATED).json({
+              user,
+            });
+          }
+
+          //SignUp user if not exist else SignIn
+          //Handle email not verified
+
+          // User.findOne({ email }).exec((err, user) => {
+          //     if(user){
+          //         return res?.json(user)
+          //     }
+          //     else{
+          //         let password = email + clientId
+          //         let newUser = new User({email,name,picture,password});
+          //         newUser.save((err,data)=>{
+          //             if(err){
+          //                 return res.status.json({error:"mongodb error"})
+          //             }
+          //             res.json(data)
+          //         })
+          //     }
+          // })
+          // registerUser({email, name, picture})
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
-  console.log("33")
+  console.log("33");
 };
 
 const subscribeToNewsLetter = async (req, res) => {
-  const {email} = req.body;
-  if (!email  ) {
+  const { email } = req.body;
+  if (!email) {
     throw new badRequestError("Please provide your email");
   }
 
@@ -513,8 +571,8 @@ const subscribeToNewsLetter = async (req, res) => {
     throw new badRequestError("Email already in use");
   }
 
-   let user = await SubscribedUser.create({ email });
-  
+  let user = await SubscribedUser.create({ email });
+
   //try and cash should be implemented (but we use instead expr-async-err)
 
   res.status(StatusCodes.CREATED).json({
@@ -529,7 +587,9 @@ const confirmUserEmail = async (req, res) => {
     // Check if the user with the provided userId exists
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(StatusCodes.NOT_FOUND).json({ error: "User not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ error: "User not found" });
     }
 
     // Switch the user role
@@ -544,23 +604,25 @@ const confirmUserEmail = async (req, res) => {
       const { email, fullName } = user;
       // Check if email is provided
       if (!email) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Email is required' });
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ error: "Email is required" });
       }
 
       // Send the verification code to the user's email
       // Create a transporter
       const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        service: "gmail",
         auth: {
-          user: 'sales@getsweet.ai',
-          pass: 'bripwwstustvdiei',
+          user: "sales@getsweet.ai",
+          pass: "bripwwstustvdiei",
         },
       });
 
       const mailOptions = {
-        from: 'sales@getsweet.ai',
+        from: "sales@getsweet.ai",
         to: email,
-        subject: 'Your GetSweet.AI Account has been created',
+        subject: "Your GetSweet.AI Account has been created",
         html: `
         <div style="background-color: #f2f2f2; padding: 20px;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
@@ -580,79 +642,94 @@ const confirmUserEmail = async (req, res) => {
       };
 
       await transporter.sendMail(mailOptions);
-      res.status(StatusCodes.OK).json({ message: 'User confirmed successfully', newUser });
+      res
+        .status(StatusCodes.OK)
+        .json({ message: "User confirmed successfully", newUser });
     } catch (error) {
       // Handle error related to sending the email
-      console.error('Error sending welcome email:', error);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
+      console.error("Error sending welcome email:", error);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: "Internal server error" });
     }
   } catch (error) {
     // Handle error related to user lookup or update
-    console.error('Error confirming user:', error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
+    console.error("Error confirming user:", error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Internal server error" });
   }
 };
 
+export {
+  subscribeToNewsLetter,
+  sendWelcomeMessage,
+  authenticateUser,
+  register,
+  login,
+  updateUser,
+  sendVerificationCode,
+  verifyEmail,
+  resetPassword,
+  deleteUser,
+  getUserById,
+  confirmUserEmail,
+  sendEmailVerification,
+  updateAvailableTokens,
+};
 
+const sendEmailVerification = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const { userId } = req.params;
 
-export { subscribeToNewsLetter,sendWelcomeMessage,authenticateUser,register, login, updateUser,sendVerificationCode,verifyEmail, resetPassword,deleteUser,getUserById,confirmUserEmail,sendEmailVerification,updateAvailableTokens };
+    // Check if email is provided
+    if (!email) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ error: "Email is required" });
+    }
 
+    // Generate the verification link
 
+    const verificationLink = `http://app.getsweet.ai/confirm-email/${userId}`;
 
+    // Send the verification link to the user's email
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "sales@getsweet.ai",
+        pass: "bripwwstustvdiei",
+      },
+    });
 
+    const mailOptions = {
+      from: "sales@getsweet.ai",
+      to: email,
+      subject: "Email Confirmation",
+      html: `
+         <div style="background-color: #f2f2f2; padding: 20px;">
+           <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+             <h1 style="text-align: center; color: #333; font-size: 24px; margin-bottom: 20px;">Email Confirmation</h1>
+             <p style="font-size: 16px; line-height: 1.5; color: #555;">Thank you for registering. To confirm your email, please click the following link:</p>
+             <div style="text-align: center; margin: 30px 0;">
+               <a href="${verificationLink}" style="display: inline-block; background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Confirm Email</a>
+             </div>
+             <p style="font-size: 16px; line-height: 1.5; color: #555;">By clicking the link above, you will confirm your email.</p>
+             <p style="font-size: 14px; line-height: 1.2; color: #888; margin-top: 40px; text-align: center;">This email was sent by the GetSweet.AI Team.</p>
+           </div>
+         </div>
+       `,
+    };
+    await transporter.sendMail(mailOptions);
 
-
-
-
-
-
-
-// const sendEmailVerification = async (req, res) => {
-//   try {
-//     const { email } = req.body;
-//     const { userId } = req.params;
-    
-//     // Check if email is provided
-//     if (!email) {
-//       return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Email is required' });
-//     }
-
-//     // Generate the verification link
-//     const verificationLink = `http://app.getsweet.ai/confirm-email/${userId}`;
-
-//     // Send the verification link to the user's email
-//     const transporter = nodemailer.createTransport({
-//       service: 'gmail',
-//       auth: {
-//         user: 'sales@getsweet.ai',
-//         pass: 'bripwwstustvdiei',
-//       },
-//     });
-
-//     const mailOptions = {
-//       from: 'sales@getsweet.ai',
-//       to: email,
-//       subject: 'Email Confirmation',
-//       html: `
-//         <div style="background-color: #f2f2f2; padding: 20px;">
-//           <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-//             <h1 style="text-align: center; color: #333; font-size: 24px; margin-bottom: 20px;">Email Confirmation</h1>
-//             <p style="font-size: 16px; line-height: 1.5; color: #555;">Thank you for registering. To confirm your email, please click the following link:</p>
-//             <div style="text-align: center; margin: 30px 0;">
-//               <a href="${verificationLink}" style="display: inline-block; background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Confirm Email</a>
-//             </div>
-//             <p style="font-size: 16px; line-height: 1.5; color: #555;">By clicking the link above, you will confirm your email.</p>
-//             <p style="font-size: 14px; line-height: 1.2; color: #888; margin-top: 40px; text-align: center;">This email was sent by the GetSweet.AI Team.</p>
-//           </div>
-//         </div>
-//       `,
-//     };
-
-//     await transporter.sendMail(mailOptions);
-
-//     res.status(StatusCodes.OK).json({ message: 'Email verification link sent successfully' });
-//   } catch (error) {
-//     // Handle error
-//     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
-//   }
-// };
+    res
+      .status(StatusCodes.OK)
+      .json({ message: "Email verification link sent successfully" });
+  } catch (error) {
+    // Handle error
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Internal server error" });
+  }
+};
