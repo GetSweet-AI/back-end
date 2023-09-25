@@ -3,6 +3,7 @@ import BrandEngagement from "../model/BrandEngagement.js";
 import FeedPosts from "../model/FeedPosts.js";
 import { badRequestError, notFoundError} from "../errors/index.js";
 import User from "../model/User.js";
+import Archive from "../model/Archive.js";
 
 const saveBrandEngagement = async (req, res) => {
   try {
@@ -150,6 +151,16 @@ const deleteBrandEngagement = async (req, res) => {
   if (!brandEngagement) {
     throw new notFoundError(`No brandEngagement with id :${brandId}`)
   }
+
+  const archiveBrandEngagement = await Archive.create({
+    Timezone: brandEngagement.Timezone,
+    CompanySector: brandEngagement.CompanySector,
+    BrandTone: brandEngagement.BrandTone,
+    postContent:brandEngagement.postContent,
+    WebSite: brandEngagement.WebSite,
+    BrandName: brandEngagement.BrandName,
+    createdBy: brandEngagement.createdBy // Set createdBy to the userId
+  });
 
   // checkPermissions(req.user, brandEngagement.createdBy)
 

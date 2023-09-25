@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 const ClientConnectSchema = new mongoose.Schema({
     BrandEngagementID: {
-        type: String,
-        required: [true, "Please provide BrandEngagementID"],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "BrandEngagement",
       },
     ConnectLinkURL: {
         type: String,

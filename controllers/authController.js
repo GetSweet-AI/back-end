@@ -11,10 +11,7 @@ import DeletedUser from "../model/DeletedUser.js";
 import SubscribedUser from "../model/SubscribedUser.js";
 dotenv.config(); 
 
-
-
 const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
-
 
 const register = async (req, res) => {
   const { fullName, email, password, company,role } = req.body;
