@@ -40,7 +40,11 @@ const FeedPosts = new mongoose.Schema({
     ref: 'User',
     required: [true, 'Please provide user'],
   },
-//   { timestamps: true }
+  unixTimestamp : {
+    type: String,
+    required: false,
+  },
+  
 });
 
 
