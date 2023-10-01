@@ -564,6 +564,8 @@ const subscribeToNewsLetter = async (req, res) => {
   });
 };
 
+
+//Switch isEmailConfirmed property
 const confirmUserEmail = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -635,6 +637,33 @@ const confirmUserEmail = async (req, res) => {
   }
 };
 
+//Update firstLogin : When user login for the 1st time
+const disableFirstLogin = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Check if the user with the provided userId exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({ error: "User not found" });
+    }
+
+    // Switch the user role
+    const newUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: { firstLogin: false } },
+      { new: true }
+    );
+
+      res.status(StatusCodes.OK).json({ message: 'first login disabled successfully', newUser });
+   
+  } catch (error) {
+    // Handle error related to user lookup or update
+    console.error('Error confirming user:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
+  }
+};
+
 
 const sendEmailVerification = async (req, res) => {
   try {
@@ -687,7 +716,7 @@ const sendEmailVerification = async (req, res) => {
 };
 
 
-export { updateNotificationMessage,updateNameAndCompany,subscribeToNewsLetter,sendWelcomeMessage,authenticateUser,register, login, updateEmail,sendVerificationCode,verifyEmail, resetPassword,deleteUser,getUserById,confirmUserEmail,sendEmailVerification,updateAvailableTokens };
+export {disableFirstLogin, updateNotificationMessage,updateNameAndCompany,subscribeToNewsLetter,sendWelcomeMessage,authenticateUser,register, login, updateEmail,sendVerificationCode,verifyEmail, resetPassword,deleteUser,getUserById,confirmUserEmail,sendEmailVerification,updateAvailableTokens };
 
 
 

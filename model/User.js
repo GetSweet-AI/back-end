@@ -46,6 +46,11 @@ const UserSchema = new mongoose.Schema({
       required: false,
       default:false
     },
+    firstLogin: {
+      type: Boolean,
+      required: false,
+      default:true
+    },
     availableTokens: {
       type: Number,
       required: false,

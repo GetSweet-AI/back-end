@@ -7,7 +7,7 @@ import { register, login,
      updateEmail, sendVerificationCode,
       verifyEmail, resetPassword, 
       deleteUser, getUserById,
-       confirmUserEmail, sendEmailVerification, updateAvailableTokens, authenticateUser, sendWelcomeMessage, subscribeToNewsLetter, updateNameAndCompany, updateNotificationMessage
+       confirmUserEmail, sendEmailVerification, updateAvailableTokens, authenticateUser, sendWelcomeMessage, subscribeToNewsLetter, updateNameAndCompany, updateNotificationMessage, disableFirstLogin
      } from "../controllers/authController.js";
 
 router.route("/register").post(register);
@@ -35,5 +35,8 @@ router.post('/googlelogin', authenticateUser);
 
 //Subscribe to news letter
 router.route("/subscribe").post(subscribeToNewsLetter);
+
+// Switch firstLogin property
+router.put("/users/disable-first-login/:userId", disableFirstLogin);
 
 export default router;
