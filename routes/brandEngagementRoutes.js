@@ -1,9 +1,10 @@
 import express from "express";
-import { deleteBrandEngagement, deleteFeedPost, getBrandEngagementById, getBrandManagements, getFeedPostByBEId, getFeedPosts, saveBrandEngagement, saveFeedPost, updateBrandEngagementPostFeed, updatedBERelatedPostsStatus } from "../controllers/brandEngagementController.js";
+import { cloneBrandEngagement, deleteBrandEngagement, deleteFeedPost, getBrandEngagementById, getBrandManagements, getFeedPostByBEId, getFeedPosts, saveBrandEngagement, saveFeedPost, updateBrandEngagementPostFeed, updatedBERelatedPostsStatus } from "../controllers/brandEngagementController.js";
 const router = express.Router();
 import authenticateUser from "../middleware/auth.js";
 
 router.route("/save-brand-engagement/:userId").post(saveBrandEngagement);
+router.route("/clone-brand-engagement/:userId").post(cloneBrandEngagement);
 router.route("/save-feed-post/:userId").post(saveFeedPost);
 router.route("/brand-engagements/:userId").get(getBrandManagements);
 router.route("/brand-engagement/:id").get(getBrandEngagementById);

@@ -42,6 +42,46 @@ const saveBrandEngagement = async (req, res) => {
   }
 };
 
+const cloneBrandEngagement = async (req, res) => {
+  try {
+    const userId = req.params.userId; // Extract the userId from the route parameter
+    const beId = req.query.beId; // Extract the brand engagement ID from the query parameter
+
+    if (!beId) {
+      throw new Error('Brand Engagement ID not found');
+    }
+
+    const brandEngagement = await BrandEngagement.findById(beId);
+
+    if (!brandEngagement) {
+      throw new Error('Brand engagement not found');
+    }
+
+    const cloneBrandEngagement = await BrandEngagement.create({
+      Timezone: brandEngagement.Timezone,
+      CompanySector: brandEngagement.CompanySector,
+      BrandTone: brandEngagement.BrandTone,
+      postContent: brandEngagement.postContent,
+      WebSite: brandEngagement.WebSite,
+      BrandName: brandEngagement.BrandName + " -" + " Copy",
+      createdBy: userId // Set createdBy to the userId
+    });
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $inc: { availableTokens: -1 } },
+      { new: true }
+    );
+
+    res.status(StatusCodes.CREATED).json({ cloneBrandEngagement, updatedUser });
+  } catch (error) {
+    // Handle the error within the catch block
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'An error occurred' });
+  }
+};
+
+
 const getBrandManagements = async (req, res, next) => {
   try {
     const userId = req.params.userId; // Extract the userId from the route parameter
@@ -242,4 +282,4 @@ const updatedBERelatedPostsStatus = async (req,res) => {
     }
 }
 
-export { updatedBERelatedPostsStatus,getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
+export { cloneBrandEngagement,updatedBERelatedPostsStatus,getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
