@@ -4,6 +4,7 @@ const app = express();
 import morgan from "morgan";
 import cors from "cors";
 app.use(cors());
+
 // Allow requests from your frontend origin
 // const allowedOrigins = [
 //   'http://app.getsweet.ai',
@@ -40,12 +41,15 @@ import connectDB from "./db/connect.js";
 
 // routers
 import authRouter from "./routes/authRoutes.js";
+import templateRouter from "./routes/templateRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
 import stripeRouter from "./routes/stripeRoutes.js";
 import gptRouter from "./routes/gptRoutes.js";
 import brandEngagementRoutes from "./routes/brandEngagementRoutes.js";
 import checkoutRoutes from "./routes/checkoutRoutes.js";
 import clientConnectsRoutes from "./routes/clientConnectRoutes.js"
+
+
 import stripeInit from 'stripe';
 //middleware
 import errorHandlerMiddleware from "./middleware/error-handler.js";
@@ -213,13 +217,6 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
   )
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.json({ msg: "Welcome!" });
-});
-
-app.get("/api/v1", (req, res) => {
-  res.status(200).json({ msg: "API" });
-});
 app.post("/billing", async (req, res) => {
   const { customer } = req.body;
 
@@ -230,6 +227,7 @@ app.post("/billing", async (req, res) => {
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/admin", templateRouter);
 app.use("/api/v1",brandEngagementRoutes );
 app.use("/api/v1",gptRouter );
 app.use("/api/v1",checkoutRoutes );
