@@ -4,6 +4,7 @@
   import notFoundError from "../errors/not-found.js";
   import User from "../model/User.js";
   import TemplateArchive from "../model/TemplateArchive.js";
+import badRequestError from "../errors/bad-request.js";
 
   dotenv.config(); 
 
@@ -80,11 +81,9 @@
       const { userId } = req.query;
   
       // Check if the user with the provided userId exists and has the "admin" role
-      const user = await User.findOne({ _id: userId, role: "admin" });
-
+      const user = await User.findOne({ _id: userId });
       if (!user) {
-        // If the user is not found or is not an admin, return a forbidden error
-        return res.status(StatusCodes.FORBIDDEN).json({ error: "You are not authorized to perform this action" });
+        throw new badRequestError('User ID not found');
       }
 
       const templates = await Template.find({})
