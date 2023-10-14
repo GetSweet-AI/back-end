@@ -11,7 +11,7 @@ import badRequestError from "../errors/bad-request.js";
   //Add new template
   const addNewTemplate = async (req, res) => {
       try {
-        const { Title,Timezone, CompanySector, BrandTone, WebSite, BrandName } = req.body;
+        const { endDate,lifeCycleStatus,Title,Timezone, CompanySector, BrandTone, WebSite, BrandName } = req.body;
     
         if (!Title || !CompanySector || !BrandTone || !BrandName ) {
           return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Title, CompanySector, BrandTone, and BrandName are required fields' });
@@ -30,6 +30,8 @@ import badRequestError from "../errors/bad-request.js";
           BrandTone,
           WebSite,
           BrandName,
+          endDate,
+          lifeCycleStatus,
           createdBy: userId // Set createdBy to the userId
         });
     

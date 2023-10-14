@@ -51,6 +51,21 @@ const TemplateSchema = new mongoose.Schema({
     ref: 'User',
     required: [true, 'Please provide user'],
   },
+  lifeCycleStatus: {
+    type: String,
+    enum: ["RunForEver", "HasEndDate"],
+    default: "RunForEver"
+  },
+  endDate: {
+    type: String, // Storing the date as a string
+    validate: {
+      validator: function (value) {
+        // Use a regular expression to check if the format is "YYYY-MM-DD"
+        return /^(?:\d{4})-(?:\d{2})-(?:\d{2})$/.test(value);
+      },
+      message: "Invalid endDate format. Use 'YYYY-MM-DD' format.",
+    },
+  },
   // { timestamps: true }
 });
 

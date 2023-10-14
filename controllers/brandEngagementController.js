@@ -7,7 +7,7 @@ import Archive from "../model/Archive.js";
 
 const saveBrandEngagement = async (req, res) => {
   try {
-    const { Timezone, CompanySector, BrandTone, TargetAudience, PostType, postContent, WebSite, BrandName } = req.body;
+    const { lifeCycleStatus,endDate,Timezone, CompanySector, BrandTone, TargetAudience, PostType, postContent, WebSite, BrandName } = req.body;
 
     if (!CompanySector || !BrandTone || !BrandName) {
       return res.status(StatusCodes.BAD_REQUEST).json({ error: 'CompanySector, BrandTone, and BrandName are required fields' });
@@ -26,6 +26,8 @@ const saveBrandEngagement = async (req, res) => {
       postContent,
       WebSite,
       BrandName,
+      endDate,
+      lifeCycleStatus,
       createdBy: userId // Set createdBy to the userId
     });
 
