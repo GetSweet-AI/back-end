@@ -4,7 +4,7 @@
   import notFoundError from "../errors/not-found.js";
   import User from "../model/User.js";
   import TemplateArchive from "../model/TemplateArchive.js";
-import badRequestError from "../errors/bad-request.js";
+  import badRequestError from "../errors/bad-request.js";
 
   dotenv.config(); 
 
@@ -13,8 +13,8 @@ import badRequestError from "../errors/bad-request.js";
       try {
         const { endDate,lifeCycleStatus,Title,Timezone, CompanySector, BrandTone, WebSite, BrandName } = req.body;
     
-        if (!Title || !CompanySector || !BrandTone || !BrandName ) {
-          return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Title, CompanySector, BrandTone, and BrandName are required fields' });
+        if (!Title || !BrandTone  ) {
+          return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Title and BrandTone are required fields' });
         }
         
         const userId = req.params.userId; // Extract the userId from the route parameter

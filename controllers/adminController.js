@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 import stripeInit from 'stripe';
 import DeletedUser from "../model/DeletedUser.js";
 import Archive from "../model/Archive.js";
+import TemplateArchive from "../model/TemplateArchive.js";
 dotenv.config(); 
 
 
@@ -155,9 +156,30 @@ const getUsers = async (req, res) => {
       .skip(PAGE_SIZE * page);
   
       const total = await Archive.countDocuments({});
+      const templateArchive = await TemplateArchive.find({})
 
       // Return the brand engagements as a response
-      res.status(200).json({ total,totalPages: Math.ceil(total / PAGE_SIZE),archive });
+      res.status(200).json({ total,totalPages: Math.ceil(total / PAGE_SIZE),archive,templateArchive });
+    } catch (error) {
+      next(error);
+    }
+  };
+  const getTemplatesArchive = async (req, res, next) => {
+    try {
+      const { userId } = req.query;
+  
+      // Check if the user with the provided userId exists and has the "admin" role
+      const user = await User.findOne({ _id: userId, role: "admin" });
+
+      if (!user) {
+        // If the user is not found or is not an admin, return a forbidden error
+        return res.status(StatusCodes.FORBIDDEN).json({ error: "You are not authorized to perform this action" });
+      }
+
+      const templateArchive = await TemplateArchive.find({})
+
+      // Return the brand engagements as a response
+      res.status(200).json({templateArchive });
     } catch (error) {
       next(error);
     }
@@ -205,4 +227,4 @@ const getUsers = async (req, res) => {
   
   
 
-export { getUsers,updateUserRole,getFeedPostsForAdmin,getAllBrandManagements,createUser,getArchiveData };
+export { getUsers,updateUserRole,getFeedPostsForAdmin,getAllBrandManagements,createUser,getArchiveData,getTemplatesArchive };
