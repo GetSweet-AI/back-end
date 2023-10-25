@@ -44,6 +44,17 @@ const FeedPosts = new mongoose.Schema({
     type: String,
     required: false,
   },
+  cloudTitle: {
+    type:String
+  },
+  toBeArchived:{
+    type:Boolean,
+    default:false
+  },
+  archived:{
+    type:Boolean,
+    default:false
+  }
   
 });
 
