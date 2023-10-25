@@ -96,6 +96,14 @@ const UserSchema = new mongoose.Schema({
       required: true,
       enum:["payment_succeeded","payment_failed","none"],
       default:"none"
+    },
+    lastLoggedIn:{
+      type:Date,
+      default:null
+    },
+    countBrandEngagements:{
+      type:Number,
+      default:0
     }
     
 });

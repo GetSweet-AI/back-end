@@ -27,7 +27,6 @@ const getUsers = async (req, res) => {
         return res.status(StatusCodes.FORBIDDEN).json({ error: "You are not authorized to perform this action" });
       }
   
-      
       const PAGE_SIZE = 8;
       const page = parseInt(req.query.page || "0");
       // Your logic to retrieve brand engagements based on the user ID
@@ -37,6 +36,14 @@ const getUsers = async (req, res) => {
   
       const total = await User.countDocuments({isEmailConfirmed:true});
 
+
+      for (const user of users) {
+        // Retrieve brand engagements for the user using getBrandEngagementById
+        const brandEngagements = await BrandEngagement.find({ createdBy: user._id });
+  
+        // Add countBrandEngagements to the user object
+        user.countBrandEngagements = brandEngagements.length;
+      }
       // Fetch all users
       // const users = await User.find({});
       res.status(StatusCodes.OK).json({total,totalPages: Math.ceil(total / PAGE_SIZE),users});

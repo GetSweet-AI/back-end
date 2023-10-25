@@ -61,6 +61,7 @@ const login = async (req, res) => {
   const user = await User.findOne({ email }).select("+password");
   const userData = await User.findOne({ email });
 
+
   if (!user) {
     throw new UnAuthenticatedError("Invalid Credentials");
   }
@@ -73,6 +74,13 @@ const login = async (req, res) => {
   if (!isPasswordCorrect) {
     throw new UnAuthenticatedError("Invalid Credentials");
   }
+
+  const newUser = await User.findByIdAndUpdate(
+    userData?._id,
+    { $set: { lastLoggedIn: new Date() } },
+    { new: true }
+  );
+
 
   const token = user.createJWT();
   user.password = undefined;
@@ -508,35 +516,27 @@ const authenticateUser = async (req, res) => {
                 let user;
                 if(userAlreadySignedIn){
                     user = await User.create({email,password, fullName:name,picture,customerId:customer.id,isEmailConfirmed:true,signUpMode:"Google",availableTokens:0 });
+
                 }else{
                   user = await User.create({email,password, fullName:name,picture,customerId:customer.id,isEmailConfirmed:true,signUpMode:"Google" });
                 }
+               
+
+
                 
                 // await User.create({email,password, fullName:name,picture,customerId:customer.id,isEmailConfirmed:true,signUpMode:"Google" });
                 res.status(StatusCodes.CREATED).json({
                   user,
                 });
                 }
+                const userData = await User.findOne({ email });
+                await User.findByIdAndUpdate(
+                  userData?._id,
+                  { $set: { lastLoggedIn: new Date() } },
+                  { new: true }
+                );
+               
 
-              //SignUp user if not exist else SignIn
-              //Handle email not verified
-                
-                  // User.findOne({ email }).exec((err, user) => {
-                  //     if(user){
-                  //         return res?.json(user)
-                  //     }
-                  //     else{
-                  //         let password = email + clientId
-                  //         let newUser = new User({email,name,picture,password});
-                  //         newUser.save((err,data)=>{
-                  //             if(err){
-                  //                 return res.status.json({error:"mongodb error"})
-                  //             }
-                  //             res.json(data)
-                  //         })
-                  //     }
-                  // })
-                  // registerUser({email, name, picture})
               }
           })
           .catch(err => { console.log(err) })
