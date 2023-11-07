@@ -11,8 +11,9 @@ export async function checkoutController(req, res) {
 
     let customer;
 
-    const priceId  = (plan === "basic" ? process.env.STRIPE_PRODUCT_PRICE_ID :
-       plan === "pro" ? process.env.STRIPE_PRODUCT_PRO_PRICE_ID :  process.env.STRIPE_PRODUCT_PRO_PLUS_PRICE_ID )
+    const priceId  = (plan === "Starter Plan" ? process.env.STRIPE_PRODUCT_PRICE_ID :
+       plan === "Growth" ? process.env.STRIPE_PRODUCT_PRO_PRICE_ID : 
+        process.env.STRIPE_PRODUCT_PRO_PLUS_PRICE_ID )
  
   // Check if the customer exists
   // console.log("Prci")

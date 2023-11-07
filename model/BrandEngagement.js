@@ -26,7 +26,8 @@ const BrandEngagementSchema = new mongoose.Schema({
     required: [true, "Please provide brand name"],
     // minlength: 3,
     trim: true,
-    default:""
+    default:"",
+    unique:true
   },
   CompanySector: {
     type: String,

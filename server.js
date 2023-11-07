@@ -1,9 +1,10 @@
 import express from "express";
 const app = express();
-
+import bodyParser from 'body-parser';
 import morgan from "morgan";
 import cors from "cors";
 app.use(cors());
+import { json, urlencoded } from 'express';
 
 // Allow requests from your frontend origin
 // const allowedOrigins = [
@@ -55,6 +56,8 @@ import stripeInit from 'stripe';
 import errorHandlerMiddleware from "./middleware/error-handler.js";
 import notFoundModule from "./middleware/not-found.js";
 import User from "./model/User.js";
+import { uploadImage } from "./uploadImage.js";
+import Post from "./model/Post.js";
 
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
@@ -107,19 +110,19 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
 
         if ( event.data.object.lines.data[0].plan.id === process.env.STRIPE_PRODUCT_PRICE_ID) {
           // console.log('You are talking about basic product')
-          plan = 'basic';
+          plan = 'Starter Plan';
           number_of_tokens = 10;
 
         }
         if ( event.data.object.lines.data[0].plan.id === process.env.STRIPE_PRODUCT_PRO_PRICE_ID) {
           // console.log('You are talking about por product')
-          plan = 'pro';
+          plan = 'Growth';
           number_of_tokens=20;
         }
         if ( event.data.object.lines.data[0].plan.id === process.env.STRIPE_PRODUCT_PRO_PLUS_PRICE_ID) {
           // console.log('You are talking about pro plus product')
-          plan = 'pro_plus';
-          number_of_tokens=50
+          plan = 'Business';
+          number_of_tokens=30
 
         }
   
@@ -217,6 +220,31 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
   )
 app.use(express.json());
 
+
+// Increase the request size limit
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
+
+app.post("/api/uploadImage", (req, res) => {
+  uploadImage(req.body.image)
+    .then((url) => res.send(url))
+    .catch((err) => res.status(500).send(err));
+});
+
+
+app.post("/uploads", async (req, res) => {
+  const body = req.body;
+
+  try {
+    await Post.create(body); // Create and save the document in one step
+
+    res.status(201).json({ msg: "New image uploaded...!" });
+  } catch (error) {
+    res.status(409).json({ message: error.message });
+  }
+});
+
+
 app.post("/billing", async (req, res) => {
   const { customer } = req.body;
 
@@ -269,6 +297,8 @@ app.get('/products', (req, res) => {
   // Send the paginated products and total pages as the API response
   res.json({ products: paginatedProducts, totalPages });
 });
+
+
 
 const port = process.env.PORT || 5000;
 

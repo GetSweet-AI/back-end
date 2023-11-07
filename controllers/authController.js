@@ -410,7 +410,6 @@ const getUserById = async (req, res) => {
 };
 
 
-
 // handles google login
 const clientId = new OAuth2Client("181452812828-uslduiqspmak4k0red5o3he2qphqa234.apps.googleusercontent.com");
 //  const authenticateUser = (req, res) => {
