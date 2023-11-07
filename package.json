@@ -31,7 +31,6 @@
     "nodemailer": "^6.9.3",
     "openai": "^3.2.1",
     "stripe": "^12.11.0",
-    "uploadthing": "^5.7.4",
     "validator": "^13.7.0"
   }
 }
