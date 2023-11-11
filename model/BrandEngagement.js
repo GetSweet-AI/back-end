@@ -91,6 +91,18 @@ const BrandEngagementSchema = new mongoose.Schema({
     type: String,
     enum: ["TextImagePost", "TextVideoPost","Both"],
     default: "TextVideoPost"
+  },
+  attachedPicture: {
+    type: [String], // Array of strings (URLs)
+    required: true,
+    validate: {
+      validator: function (value) {
+        // Custom validation logic
+        return Array.isArray(value) && value.every(url => typeof url === 'string');
+      },
+      message: 'attachedPictures must be an array of strings',
+    },
+  
   }
 //   { timestamps: true }
 });

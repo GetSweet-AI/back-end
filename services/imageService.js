@@ -37,10 +37,16 @@ export { uploadImage };
 // Define uploadMultipleImages as an async function
 export async function uploadMultipleImages(images) {
   try {
-    const uploads = images.map(async (base) => await uploadImage(base));
-    const values = await Promise.all(uploads);
-    return values;
-  } catch (err) {
-    throw err;
+    const base64Images = req.files.map((file) => file.buffer.toString('base64'));
+    
+    // Handle the logic to upload multiple images (e.g., to Cloudinary) here
+    const uploadedUrls = await Promise.all(base64Images.map(uploadImage));
+    
+    // Return the URLs or any relevant response
+    res.json(uploadedUrls);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
+

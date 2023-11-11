@@ -27,10 +27,10 @@ import { json, urlencoded } from 'express';
 //   }
 // }));
 
-app.use((req, res, next) => {
-  res.setHeader('Cross-Origin-Opener-Policy', 'unsafe-none');
-  next();
-});
+// app.use((req, res, next) => {
+//   res.setHeader('Cross-Origin-Opener-Policy', 'unsafe-none');
+//   next();
+// });
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -49,6 +49,7 @@ import gptRouter from "./routes/gptRoutes.js";
 import brandEngagementRoutes from "./routes/brandEngagementRoutes.js";
 import checkoutRoutes from "./routes/checkoutRoutes.js";
 import clientConnectsRoutes from "./routes/clientConnectRoutes.js"
+import imageRoutes from "./routes/imageRoutes.js"
 
 
 import stripeInit from 'stripe';
@@ -56,7 +57,6 @@ import stripeInit from 'stripe';
 import errorHandlerMiddleware from "./middleware/error-handler.js";
 import notFoundModule from "./middleware/not-found.js";
 import User from "./model/User.js";
-import { uploadImage } from "./uploadImage.js";
 import Post from "./model/Post.js";
 
 if (process.env.NODE_ENV !== "production") {
@@ -218,18 +218,15 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
       }
     }
   )
-app.use(express.json());
+// app.use(express.json());
 
 
 // Increase the request size limit
-app.use(bodyParser.json({ limit: "50mb" }));
-app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 
-app.post("/api/uploadImage", (req, res) => {
-  uploadImage(req.body.image)
-    .then((url) => res.send(url))
-    .catch((err) => res.status(500).send(err));
-});
+// Routes
+app.use('/', imageRoutes);
 
 
 app.post("/uploads", async (req, res) => {

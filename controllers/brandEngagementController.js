@@ -117,6 +117,23 @@ const getBrandManagements = async (req, res, next) => {
   }
 };
 
+//No pagination
+const getBrandEngByUserId = async (req, res, next) => {
+  try {
+    const userId = req.params.userId; // Extract the userId from the route parameter
+
+    if (!userId) {
+      throw new Error('User ID not found');
+    }
+    const brandEngagements = await BrandEngagement.find({ createdBy: userId })
+    const total = await BrandEngagement.countDocuments({ createdBy: userId });
+    // Return the brand engagements as a response
+    res.status(200).json({ total,brandEngagements });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getBrandEngagementById = async (req,res)=>{
   const { id } = req.params;
 
@@ -299,4 +316,4 @@ const updatedBERelatedPostsStatus = async (req,res) => {
     }
 }
 
-export { cloneBrandEngagement,updatedBERelatedPostsStatus,getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
+export {getBrandEngByUserId, cloneBrandEngagement,updatedBERelatedPostsStatus,getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
