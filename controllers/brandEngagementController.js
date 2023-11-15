@@ -171,6 +171,26 @@ const updateBrandEngagementPostFeed = async (req,res)=>{
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+const updatePostFeedCaption = async (req,res)=>{
+  //TO-DO : update caption by feedPostId and switch toBeRevised to true
+  try {
+    const { feedPostId} = req.params;
+    const { NewCaption} = req.body;
+
+    // Update user information
+    const updatedFeedPost = await FeedPosts.findOneAndUpdate(
+      { _id: feedPostId },
+      { $set: { Caption:NewCaption,toBeRevised:true } },
+      { returnOriginal: false }
+    );
+
+    res.status(200).json({ NewFeedPost: updatedFeedPost });
+
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 
 const getFeedPosts = async (req, res, next) => {
   try {
@@ -316,4 +336,4 @@ const updatedBERelatedPostsStatus = async (req,res) => {
     }
 }
 
-export {getBrandEngByUserId, cloneBrandEngagement,updatedBERelatedPostsStatus,getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
+export {updatePostFeedCaption,getBrandEngByUserId, cloneBrandEngagement,updatedBERelatedPostsStatus,getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };

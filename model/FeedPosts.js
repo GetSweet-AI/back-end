@@ -54,6 +54,10 @@ const FeedPosts = new mongoose.Schema({
   archived:{
     type:Boolean,
     default:false
+  },
+  toBeRevised:{
+    type:Boolean,
+    default:false
   }
   
 });
