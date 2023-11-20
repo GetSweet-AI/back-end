@@ -1,7 +1,7 @@
 // routes/imageRoutes.js
 
 import express from 'express';
-import { uploadImageController,uploadMultipleImages } from '../controllers/imageController.js';
+import { deleteImage, uploadImageController,uploadMultipleImages } from '../controllers/imageController.js';
 
 const router = express.Router();
 import multer from 'multer';
@@ -11,5 +11,6 @@ const upload = multer({ storage: storage });
 
 router.post('/api/uploadImage', uploadImageController);
 router.post('/api/uploadMultipleImages',upload.array('images'), uploadMultipleImages);
+router.delete('/api/delete-image', deleteImage);
 
 export default router;

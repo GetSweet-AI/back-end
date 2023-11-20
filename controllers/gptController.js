@@ -65,3 +65,53 @@ limited to the following HTML tags: p, h1, h2, h3, h4, h5, h6, strong, i, ul, li
 
   // res.json({ postContent });
 }
+
+export async function generateTargetAudienceOptions(req, res) {
+  const { companySector,  } = req.body;
+//Prompt
+const prompt = `
+Given a brand description, provide a list of target audiences for the brand. The target audience list should be in the form of an array of objects, where each object has a 'label' and 'value'. The 'label' represents the category or type of audience, and the 'value' represents a specific group within that category.
+
+Example:
+
+Brand Description: "Real estate company"
+
+Expected Target Audiences:
+
+[  {label:'potential homebuyers', value:'potential homebuyers'},  {label:'property investors', value:'property investors'},  {label:'real estate agents', value:'real estate agents'}]
+Instructions to Model:
+
+Please generate a list of target audiences based on this brand description : ${companySector}. 
+the output should be in an array of objects only
+do not forget the array of objects (JSON) should be related to  ${companySector} only.
+The number of objects should be < 5
+If ${companySector} wasn't passed or provided return and empty array, the result should be related to ${companySector},
+if ${companySector} === null or " ", do not generate any content
+`
+
+  const postContentResult = await openai.createChatCompletion({
+    model: 'gpt-3.5-turbo',
+    messages: [
+      {
+        role: 'system',
+        content: 'Act as a social media post generator for companies, based on a brand description you will generate a list of target audiences.',
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ],
+    temperature: 0,
+  });
+
+  const postContent = postContentResult.data.choices[0]?.message.content || '';
+  
+   // Remove newline characters (\n) and backslash (\) from the postContent
+   const cleanedPostContent = postContent.replace(/[\n\\]/g, '');
+
+   res.json({ targetAudiences: cleanedPostContent });
+
+  // res.json({ postContent });
+}
+
+

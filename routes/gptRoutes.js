@@ -1,8 +1,9 @@
 import express from "express";
-import { generateBlogPost } from "../controllers/gptController.js";
+import { generateBlogPost, generateTargetAudienceOptions } from "../controllers/gptController.js";
 const router = express.Router();
 
 router.post('/generate-blog-post', generateBlogPost);
+router.post('/generate-ta-options', generateTargetAudienceOptions);
 export default router;
 
   
