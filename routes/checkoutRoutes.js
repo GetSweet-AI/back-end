@@ -3,6 +3,6 @@ import { checkoutController } from "../controllers/checkoutController.js";
 
 const router = express.Router();
 
-router.post('/checkout/:secretKey', checkoutController);
+router.post('/checkout', checkoutController);
 
 export default router;

@@ -5,9 +5,9 @@ export async function checkoutController(req, res) {
   try {
     
     const { name, number, email, userId,plan } = req.body;
-    const { secretKey } = req.params;
+    // const { secretKey } = req.params;
 
-    const stripe = stripeInit(secretKey);
+    const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
 
     let customer;
 
