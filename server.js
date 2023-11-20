@@ -6,31 +6,6 @@ import cors from "cors";
 app.use(cors());
 import { json, urlencoded } from 'express';
 
-// Allow requests from your frontend origin
-// const allowedOrigins = [
-//   'http://app.getsweet.ai',
-//   'https://app.getsweet.ai',
-//   'http://localhost:5000',
-//   'http://localhost:5000',
-//   'http://localhost:5173',
-//   'http://localhost:5000'
-//   // For local development
-// ];
-
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     if (allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   }
-// }));
-
-// app.use((req, res, next) => {
-//   res.setHeader('Cross-Origin-Opener-Policy', 'unsafe-none');
-//   next();
-// });
 
 import dotenv from "dotenv";
 dotenv.config();

@@ -5,7 +5,7 @@ dotenv.config();
 
 import User from "../model/User.js";
 
-const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
+const stripe = stripeInit('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');
 
 const getSubscriptions = async (req, res) => {
     // const customerId = req.cookies['customer'];
