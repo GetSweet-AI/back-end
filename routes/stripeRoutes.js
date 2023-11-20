@@ -18,6 +18,6 @@ router.get('/:customerId/status', checkSubscriptionStatusByCustOmerID);
 router.post('/update-plan', updatePlan);
 router.post('/update-subscription', updateSubscription);
 
-router.get('/plans', getAllPlanInfos );
+router.get('/plans-v2', getAllPlanInfos );
 
 export default router;
