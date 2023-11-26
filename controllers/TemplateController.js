@@ -11,7 +11,7 @@
   //Add new template
   const addNewTemplate = async (req, res) => {
       try {
-        const { endDate,lifeCycleStatus,Title,Timezone, CompanySector, BrandTone, WebSite, BrandName } = req.body;
+        const { startDate,endDate,lifeCycleStatus,Title, CompanySector, BrandTone } = req.body;
     
         if (!Title || !BrandTone  ) {
           return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Title and BrandTone are required fields' });
@@ -22,19 +22,17 @@
         if (!userId) {
           throw new badRequestError('User ID not found');
         }
-        
+        console.log('before')
         const brandTemplate = await Template.create({
           Title,
-          Timezone,
           CompanySector,
           BrandTone,
-          WebSite,
-          BrandName,
           endDate,
+          startDate,
           lifeCycleStatus,
           createdBy: userId // Set createdBy to the userId
         });
-    
+        console.log('after')
         res.status(StatusCodes.CREATED).json({ brandTemplate });
       } catch (error) {
         // Handle the error within the catch block
@@ -65,8 +63,7 @@
       Timezone: template.Timezone,
       CompanySector: template.CompanySector,
       BrandTone: template.BrandTone,
-      WebSite: template.WebSite,
-      BrandName: template.BrandName,
+
       createdBy: userId // Set createdBy to the userId
     });
   

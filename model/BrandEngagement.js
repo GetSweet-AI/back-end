@@ -87,6 +87,9 @@ const BrandEngagementSchema = new mongoose.Schema({
     //   message: "Invalid endDate format. Use 'YYYY-MM-DD' format.",
     // },
   },
+  startDate: {
+    type: String, // Storing the date as a string
+  },
   PostType:{
     type: String,
     enum: ["TextImagePost", "TextVideoPost","Both"],
