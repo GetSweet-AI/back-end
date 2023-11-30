@@ -19,21 +19,6 @@ const TemplateArchiveSchema = new mongoose.Schema({
     trim: true,
     default:""
   },
-    WebSite: {
-    type: String,
-    required: [false, "Please provide WebSite"],
-    // minlength: 3,
-    // maxlength: 40,
-    trim: true,
-    default:""
-  },
-    BrandName: {
-    type: String,
-    required: [true, "Please provide brand name"],
-    // minlength: 3,
-    trim: true,
-    default:""
-  },
   CompanySector: {
     type: String,
     required: [true, "Please provide a valid Company Sector"],
