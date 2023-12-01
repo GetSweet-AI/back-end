@@ -5,7 +5,7 @@ dotenv.config();
 
 import User from "../model/User.js";
 
-const stripe = stripeInit('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_live_51KLrrREDPwNjcL6iGcdrDMacRQaUL27dshxwlPIpq7vSRIdaGbCEXJH5vXbRCPVazQrxqDvWY3267dp2u0bVFmC300C7buhYNl');
+const stripe = stripeInit('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');
 
 const getSubscriptions = async (req, res) => {
     // const customerId = req.cookies['customer'];
