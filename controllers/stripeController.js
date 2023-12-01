@@ -64,7 +64,7 @@ const checkSubscriptionStatus = async (req, res) => {
 
   try {
     // Fetch the subscription from Stripe using the subscriptionId
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    const subscription = await stripe.subscriptions?.retrieve(subscriptionId);
 
     let status;
     if (subscription.status === 'active') {
