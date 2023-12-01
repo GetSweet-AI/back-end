@@ -1,13 +1,14 @@
 import stripeInit from 'stripe';
 import User from '../model/User.js';
 
+const stripe = stripeInit('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');
+
+
 export async function checkoutController(req, res) {
   try {
     
     const { name, number, email, userId,plan } = req.body;
     // const { secretKey } = req.params;
-
-    const stripe = stripeInit('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');
 
     let customer;
 
