@@ -1,13 +1,17 @@
 import stripeInit from 'stripe';
 import User from '../model/User.js';
 
+import dotenv from "dotenv";
+dotenv.config(); 
+
+
 export async function checkoutController(req, res) {
   try {
     
     const { name, number, email, userId,plan } = req.body;
     // const { secretKey } = req.params;
 
-    const stripe = stripeInit('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');
+    const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
 
     let customer;
 
