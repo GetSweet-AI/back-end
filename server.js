@@ -237,39 +237,6 @@ app.use("/api/v1",clientConnectsRoutes );
 app.use(notFoundModule);
 app.use(errorHandlerMiddleware);
 
-// Sample data
-const products = [
-  { id: 1, name: 'Product 1' },
-  { id: 2, name: 'Product 2' },
-  { id: 3, name: 'Product 3' },
-  { id: 4, name: 'Product 4' },
-  { id: 5, name: 'Product 5' },
-  { id: 6, name: 'Product 6' },
-  { id: 7, name: 'Product 7' },
-  { id: 8, name: 'Product 8' },
-  { id: 9, name: 'Product 9' },
-  // ... Add more products
-];
-
-// Route to handle pagination requests
-app.get('/products', (req, res) => {
-  const page = parseInt(req.query.page);
-  const pageSize = parseInt(req.query.pageSize);
-  
-  // Calculate the start and end indexes for the requested page
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = page * pageSize;
-  
-  // Slice the products array based on the indexes
-  const paginatedProducts = products.slice(startIndex, endIndex);
-  
-  // Calculate the total number of pages
-  const totalPages = Math.ceil(products.length / pageSize);
-  
-  // Send the paginated products and total pages as the API response
-  res.json({ products: paginatedProducts, totalPages });
-});
-
 
 
 const port = process.env.PORT || 5000;

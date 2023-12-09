@@ -5,7 +5,6 @@ import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
 import stripeInit from 'stripe';
 import { OAuth2Client } from "google-auth-library";
-
 import dotenv from "dotenv";
 import DeletedUser from "../model/DeletedUser.js";
 import SubscribedUser from "../model/SubscribedUser.js";
@@ -25,8 +24,9 @@ const register = async (req, res) => {
   }
   let customer;
   // Check if the customer exists
+  
   const customers = await stripe.customers.list({ email: email, limit: 1 });
-  if(customers.data.length>0){
+  if(customers.data.length > 0){
   customer = customers.data[0]
   }else{
     customer = await stripe.customers.create({
