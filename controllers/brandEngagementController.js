@@ -193,6 +193,35 @@ const updatePostFeedCaption = async (req,res)=>{
   }
 }
 
+// const getFeedPosts = async (req, res, next) => {
+//   try {
+//     const userId = req.params.userId; // Extract the userId from the route parameter
+
+//     if (!userId) {
+//       throw new Error('User ID not found');
+//     }
+
+//     const PAGE_SIZE = 4;
+//     const page = parseInt(req.query.page || "0");
+
+//     const currentDate = new Date();
+//     const startOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-01`;
+//     const endOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()}`;
+//     // console.log("Current date "+currentDate)
+
+//     const total = await FeedPosts.countDocuments({ createdBy: userId,toBeArchived:false, Date: { $gte: startOfMonth, $lt: endOfMonth } });
+//     // Your logic to retrieve brand engagements based on the user ID
+//     const feedPosts = await FeedPosts.find({ createdBy: userId,toBeArchived :false, Date: { $gte: startOfMonth, $lt: endOfMonth } })
+//     .limit(PAGE_SIZE)
+//     .skip(PAGE_SIZE * page)
+//     .sort({ Date: -1 });;
+
+//     // Return the brand engagements as a response
+//     res.status(200).json({total,totalPages: Math.ceil(total / PAGE_SIZE),feedPosts });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 const getFeedPosts = async (req, res, next) => {
   try {
     const userId = req.params.userId; // Extract the userId from the route parameter
@@ -205,40 +234,55 @@ const getFeedPosts = async (req, res, next) => {
     const page = parseInt(req.query.page || "0");
 
     const currentDate = new Date();
-    const startOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-01`;
+    const startOfDay = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
     const endOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()}`;
-    // console.log("Current date "+currentDate)
 
-    const total = await FeedPosts.countDocuments({ createdBy: userId,toBeArchived:false, Date: { $gte: startOfMonth, $lt: endOfMonth } });
+    const total = await FeedPosts.countDocuments({
+      createdBy: userId,
+      toBeArchived: false,
+      Date: { $gte: startOfDay, $lte: endOfMonth }
+    });
+
     // Your logic to retrieve brand engagements based on the user ID
-    const feedPosts = await FeedPosts.find({ createdBy: userId,toBeArchived :false, Date: { $gte: startOfMonth, $lt: endOfMonth } })
-    .limit(PAGE_SIZE)
-    .skip(PAGE_SIZE * page)
-    .sort({ Date: -1 });;
+    const feedPosts = await FeedPosts.find({
+      createdBy: userId,
+      toBeArchived: false,
+      Date: { $gte: startOfDay, $lte: endOfMonth }
+    })
+      .limit(PAGE_SIZE)
+      .skip(PAGE_SIZE * page)
+      .sort({ Date: +1 }); // Sort by Date in descending order
 
     // Return the brand engagements as a response
-    res.status(200).json({total,totalPages: Math.ceil(total / PAGE_SIZE),feedPosts });
+    res.status(200).json({ total, totalPages: Math.ceil(total / PAGE_SIZE), feedPosts });
   } catch (error) {
     next(error);
   }
 };
+
+
+
+
+
+
+
 
 const getFeedPostByBEId = async (req, res, next) => {
   try {
     const brandEngagementID = req.params.brandEngagementID; // Extract the userId from the route parameter
 
     const currentDate = new Date();
-    const startOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-01`;
+    const startOfDay = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
     const endOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()}`;
-    
+
     const PAGE_SIZE = 3;
     const page = parseInt(req.query.page || "0");
 
-    const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfMonth, $lt: endOfMonth }  });
+    const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth }  });
 
     // Your logic to retrieve brand engagements based on the BrandEngagementID
-    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfMonth, $lt: endOfMonth } }).limit(PAGE_SIZE)
-    .skip(PAGE_SIZE * page).sort({Date:-1})
+    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth } }).limit(PAGE_SIZE)
+    .skip(PAGE_SIZE * page).sort({Date:+1})
 
      // Return the brand engagements as a response
      res.status(200).json({total,totalPages: Math.ceil(total / PAGE_SIZE),feedPosts });

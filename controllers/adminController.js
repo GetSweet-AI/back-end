@@ -86,6 +86,38 @@ const getUsers = async (req, res) => {
     }
   };
   
+  // const getFeedPostsForAdmin = async (req, res) => {
+  //   try {
+  //     const { userId } = req.query;
+  
+  //     // Check if the user with the provided userId exists and has the "admin" role
+  //     const user = await User.findOne({ _id: userId, role: "admin" });
+  //     if (!user) {
+  //       // If the user is not found or is not an admin, return a forbidden error
+  //       return res.status(StatusCodes.FORBIDDEN).json({ error: "You are not authorized to perform this action" });
+  //     }
+
+  //     const PAGE_SIZE = 6;
+  //     const page = parseInt(req.query.page || "0");
+
+      
+  
+  //     const total = await FeedPosts.countDocuments({toBeArchived:false });
+  //     // Fetch all users
+  //     const feedPosts = await FeedPosts.find({toBeArchived:false}).limit(PAGE_SIZE)
+  //     .skip(PAGE_SIZE * page).sort({Date:-1});
+  //     res.status(StatusCodes.OK).json({total,totalPages: Math.ceil(total / PAGE_SIZE),feedPosts});
+  //   } catch (error) {
+  //     // If an error occurs during the database query, return an appropriate error message
+  //     if (error.name === "CastError") {
+  //       // If the provided userId is not a valid ObjectId, return a bad request error
+  //       return res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid userId" });
+  //     }
+  //     // Handle other internal server errors
+  //     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
+  //   }
+  // };
+
   const getFeedPostsForAdmin = async (req, res) => {
     try {
       const { userId } = req.query;
@@ -96,17 +128,22 @@ const getUsers = async (req, res) => {
         // If the user is not found or is not an admin, return a forbidden error
         return res.status(StatusCodes.FORBIDDEN).json({ error: "You are not authorized to perform this action" });
       }
-
+  
       const PAGE_SIZE = 6;
       const page = parseInt(req.query.page || "0");
-
-      
   
-      const total = await FeedPosts.countDocuments({toBeArchived:false });
+      const currentDate = new Date();
+      const startOfDay = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+      const endOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()}`;
+  
+      const total = await FeedPosts.countDocuments({ toBeArchived: false,Date: { $gte: startOfDay, $lte: endOfMonth } });
       // Fetch all users
-      const feedPosts = await FeedPosts.find({toBeArchived:false}).limit(PAGE_SIZE)
-      .skip(PAGE_SIZE * page).sort({Date:-1});
-      res.status(StatusCodes.OK).json({total,totalPages: Math.ceil(total / PAGE_SIZE),feedPosts});
+      const feedPosts = await FeedPosts.find({ toBeArchived: false, Date: { $gte: startOfDay, $lte: endOfMonth } })
+        .limit(PAGE_SIZE)
+        .skip(PAGE_SIZE * page)
+        .sort({ Date: +1 });
+  
+      res.status(StatusCodes.OK).json({ total, totalPages: Math.ceil(total / PAGE_SIZE), feedPosts });
     } catch (error) {
       // If an error occurs during the database query, return an appropriate error message
       if (error.name === "CastError") {
@@ -117,6 +154,7 @@ const getUsers = async (req, res) => {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
     }
   };
+  
 
   const getAllBrandManagements = async (req, res, next) => {
     try {
