@@ -412,62 +412,7 @@ const getUserById = async (req, res) => {
 
 // handles google login
 const clientId = new OAuth2Client("181452812828-uslduiqspmak4k0red5o3he2qphqa234.apps.googleusercontent.com");
-//  const authenticateUser = (req, res) => {
-//   const { idToken } = req.body;
 
-//   client
-//     .verifyIdToken({ idToken, audience: "181452812828-uslduiqspmak4k0red5o3he2qphqa234.apps.googleusercontent.com" })
-//     .then((response) => {
-//       const { email_verified, name, email } = response.payload;
-
-//       if (email_verified) {
-//         User.findOne({ email }).exec((err, user) => {
-//           if (user) {
-//             // const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-//             //   expiresIn: "7d"
-//             // });
-//             const { _id, email, name } = user;
-//             return res.json({
-//               // token,
-//               user: { _id, email, name }
-//             });
-//           } else {
-//             const password = email ;
-
-//             user = new User({ name, email, password });
-//             user
-//               .save((err, data) => {
-//                 if (err) {
-//                   return res.status(400).json({
-//                     error: "User signup failed with google"
-//                   });
-//                 }
-//                 // const token = jwt.sign(
-//                 //   { _id: data._id },
-//                 //   // process.env.JWT_SECRET,
-//                 //   { expiresIn: "7d" }
-//                 // );
-//                 const { _id, email, name } = data;
-
-//                 return res.json({
-//                   // token,
-//                   user: { _id, email, name }
-//                 });
-//               })
-//               .catch((err) => {
-//                 return res.status(401).json({
-//                   message: "signup error"
-//                 });
-//               });
-//           }
-//         });
-//       } else {
-//         return res.status(400).json({
-//           error: "Google login failed. Try again"
-//         });
-//       }
-//     });
-// };
 
 const authenticateUser = async (req, res) => {
   const { idToken } = req.body;
@@ -484,16 +429,7 @@ const authenticateUser = async (req, res) => {
                 console.log("Two")
                 const user = await User.findOne({ email });
                 if (user) {
-                  // user.json({})
-                  // window.location.href = "http://localhost:5173/brand-engagement-builder"
-                  // return response?.json(data?.user)
-                  // return response
-                  // console.log(json({
-                  //   user
-                  // }))
-                  res.status(StatusCodes.CREATED).json({
-                    user
-                  });
+                  res.status(StatusCodes.CREATED).json({user});
                 } else {
                   let customer;
                 // Check if the customer exists
@@ -519,10 +455,7 @@ const authenticateUser = async (req, res) => {
                 }else{
                   user = await User.create({email,password, fullName:name,picture,customerId:customer.id,isEmailConfirmed:true,signUpMode:"Google" });
                 }
-               
-
-
-                
+                        
                 // await User.create({email,password, fullName:name,picture,customerId:customer.id,isEmailConfirmed:true,signUpMode:"Google" });
                 res.status(StatusCodes.CREATED).json({
                   user,
@@ -535,12 +468,10 @@ const authenticateUser = async (req, res) => {
                   { new: true }
                 );
                
-
               }
           })
           .catch(err => { console.log(err) })
   }
-  console.log("33")
 };
 
 const subscribeToNewsLetter = async (req, res) => {
