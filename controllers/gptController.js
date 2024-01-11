@@ -16,8 +16,7 @@ Act as an experienced marketing expert and copywriter,
   This summary should encapsulate the core identity of the brand, accentuating its unique characteristics while establishing a clear connection to its specific brand description, ${companySector}.
   ${companySector} is a variable that act as a brand description
   The brand is celebrated for its distinctive and innovative ${tone} approach, setting it apart as a pioneer within the industry. 
-  The resulting text will be used in social media posts to represent ${brandName}, 
-  and please note that the brand is targeting ${targetAudience} if it is not null.
+  The resulting text will be used in social media posts to represent ${brandName}
   
  Please do not forget to Include icons to give make the post pro for a social media post description for the ${brandName}
   Never return  undefined, do not include undefined word in the result
@@ -72,6 +71,8 @@ do not forget the array of objects (JSON) should be related to  ${companySector}
 The number of objects should be < 5
 If ${companySector} wasn't passed or provided return and empty array, the result should be related to ${companySector},
 if ${companySector} === null or " ", do not generate any content
+
+Never include a value that's should be added by the user like : [insert website URL]
 `
 
   const postContentResult = await openai.createChatCompletion({
