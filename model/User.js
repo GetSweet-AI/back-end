@@ -2,9 +2,20 @@ import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+ 
 const UserSchema = new mongoose.Schema({
-  picture:String,
+  /*picture: {
+    type: [String], // Array of strings (URLs)
+    required: false,
+    validate: {
+      validator: function (value) {
+        // Custom validation logic
+        return Array.isArray(value) && value.every(url => typeof url === 'string');
+      },
+      message: 'attachedPictures must be an array of strings',
+    },
+  
+  },*/
   fullName: {
     type: String,
     // required: [true, "Please provide name"],
