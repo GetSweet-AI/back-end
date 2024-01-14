@@ -1,7 +1,7 @@
 import { Configuration, OpenAIApi } from 'openai';
 
 const config = new Configuration({
-  apiKey: process.env.API_OPEN_AI,
+  apiKey: "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",
 });
 const openai = new OpenAIApi(config);
 
@@ -26,7 +26,7 @@ Act as an experienced marketing expert and copywriter,
 
 
   const postContentResult = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-4',
     messages: [
       {
         role: 'system',
