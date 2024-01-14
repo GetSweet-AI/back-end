@@ -1,7 +1,7 @@
 import { Configuration, OpenAIApi } from 'openai';
 
 const config = new Configuration({
-  apiKey: "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",
+  apiKey: process.env.API_OPEN_AI,
 });
 const openai = new OpenAIApi(config);
 
@@ -73,6 +73,7 @@ If ${companySector} wasn't passed or provided return and empty array, the result
 if ${companySector} === null or " ", do not generate any content
 
 Never include a value that's should be added by the user like : [insert website URL]
+The output always is an array of objects like this : [  {label:'lebel here', value:'value here'}]
 `
 
   const postContentResult = await openai.createChatCompletion({

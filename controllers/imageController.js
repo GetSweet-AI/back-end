@@ -6,6 +6,8 @@ import { uploadImage, uploadMultipleImages } from '../services/imageService.js';
 import cloudinary from "cloudinary";
 import dotenv from "dotenv";
 
+import User from "../model/User.js";
+
 dotenv.config()
 
 cloudinary.v2.config({
@@ -39,6 +41,24 @@ const uploadImageController = async (req, res) => {
     res.status(500).send(err);
   }
 };
+
+const uploadUserImage = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const url = await uploadImage(req.body.image);
+
+    // Update user information
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { picture:url} },
+      { returnOriginal: false }
+    );
+    res.send(url);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
 const uploadMultipleImagesController = async (req, res) => {
   // try {
   //   const brandEId = req.body.brandEId;
@@ -119,7 +139,6 @@ export const deleteImage = async (req, res) => {
       res.status(500).json({ error: 'Failed to delete image.' });
     }
 
-  
     // res.json({ message: 'Image URL deleted successfully', brandEngagement });
   } catch (error) {
     console.error(error);
@@ -127,6 +146,4 @@ export const deleteImage = async (req, res) => {
   }
 };
 
-
-
-export { uploadImageController,uploadMultipleImages };
+export { uploadImageController,uploadMultipleImages,uploadUserImage };
