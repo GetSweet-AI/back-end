@@ -58,7 +58,24 @@ const FeedPosts = new mongoose.Schema({
   toBeRevised:{
     type:Boolean,
     default:false
-  }
+  },
+  toBeScheduled: {
+    type: Boolean,
+    default: false, // Optional with a default value
+  },
+  scheduled: {
+    type: Boolean,
+    default: false, // Optional with a default value
+  },
+  dateCreatedTimestamp: {
+    type: String, // or Double, depending on your needs
+    required: false, // This makes the field optional
+  },
+  postType: {
+    type: String,
+    required: false, // This makes the field optional
+  },
+
   
 });
 
