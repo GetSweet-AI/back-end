@@ -108,7 +108,7 @@ const BrandEngagementSchema = new mongoose.Schema({
   
   }
 //   { timestamps: true }
-});
+},{ timestamps: true });
 
 
 

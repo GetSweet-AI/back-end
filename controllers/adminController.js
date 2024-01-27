@@ -200,6 +200,7 @@ const getUsers = async (req, res) => {
       // Your logic to retrieve brand engagements based on the user ID
       const archive = await Archive.find({})
       .limit(PAGE_SIZE)
+      .sort({ createdAt: -1 })
       .skip(PAGE_SIZE * page);
   
       const total = await Archive.countDocuments({});

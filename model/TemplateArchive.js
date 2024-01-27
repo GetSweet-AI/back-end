@@ -36,8 +36,8 @@ const TemplateArchiveSchema = new mongoose.Schema({
     ref: 'User',
     required: [true, 'Please provide user'],
   },
-  // { timestamps: true }
-});
+
+},{ timestamps: true });
 
 
 

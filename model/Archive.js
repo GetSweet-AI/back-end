@@ -71,9 +71,8 @@ const ArchiveSchema = new mongoose.Schema({
     type: String,
     enum: ["Posts generating...", "Posts are ready"],
     default: "Posts generating..."
-  },
-  // { timestamps: true }
-});
+  }
+},{ timestamps: true });
 
 
 

@@ -77,7 +77,7 @@ const FeedPosts = new mongoose.Schema({
   },
 
   
-});
+},{ timestamps: true });
 
 
 

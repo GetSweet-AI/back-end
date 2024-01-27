@@ -109,6 +109,7 @@ const getBrandManagements = async (req, res, next) => {
     
     // Your logic to retrieve brand engagements based on the user ID
     const brandEngagements = await BrandEngagement.find({ createdBy: userId }).limit(PAGE_SIZE)
+    .sort({ createdAt: -1 })
     .skip(PAGE_SIZE * page);
 
     // Return the brand engagements as a response
@@ -223,6 +224,7 @@ const getFeedPosts = async (req, res, next) => {
     })
       .limit(PAGE_SIZE)
       .skip(PAGE_SIZE * page)
+      .sort({ createdAt: -1 })
       .sort({ Date: +1 }); // Sort by Date in descending order
 
     // Return the brand engagements as a response
