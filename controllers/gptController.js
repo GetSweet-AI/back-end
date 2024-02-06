@@ -9,20 +9,20 @@ export async function generateBlogPost(req, res) {
   const { targetAudience, platform,question,tone, brandName, companySector,  } = req.body;
 //Prompt
 const prompt = `
-Hello chatgpt, please do not return the word : "undefined", if a var is undefined just skip it.
+  Hello chatgpt, please do not return the word : "undefined", if a var is undefined just skip it.
 Act as an experienced marketing expert and copywriter,
- your task is to craft a concise, SEO-friendly summary of the brand,
-  ${brandName}, within a limit of 100 words. 
-  This summary should encapsulate the core identity of the brand, accentuating its unique characteristics while establishing a clear connection to its specific brand description, ${companySector}.
-  ${companySector} is a variable that act as a brand description
-  The brand is celebrated for its distinctive and innovative ${tone} approach, setting it apart as a pioneer within the industry. 
-  The resulting text will be used in social media posts to represent ${brandName}
+your task is to craft a concise, SEO-friendly summary of the brand ${brandName}, within a limit of 100 words. 
+This summary should encapsulate the core identity of the brand, accentuating its unique characteristics while establishing a clear connection to its specific brand description, ${companySector}.
+${companySector} is a variable that act as a brand description
+The brand is celebrated for its distinctive and innovative ${tone} approach, setting it apart as a pioneer within the industry. 
+The resulting text will be used in social media posts to represent ${brandName}
   
- Please do not forget to Include icons to give make the post pro for a social media post description for the ${brandName}
-  Never return  undefined, do not include undefined word in the result
-   Please format your response using SEO-friendly HTML, adhering to the following tags: p, h1, h2, h3, h4, h5, h6, strong, i, ul, li, and ol. Your creative input is crucial in establishing an engaging and memorable brand presence.
+Try to start the caption with a clear and good hook to keep the user reading the post description
+Please do not forget to Include icons to give make the post pro for a social media post description for the ${brandName}
+Never return  undefined, do not include undefined word in the result
+Please include only the most 4 trending hashtags related to brands like :  ${companySector}
+Please format your response using SEO-friendly HTML, adhering to the following tags: p, h1, h2, h3, h4, h5, h6, strong, i, ul, li, and ol. Your creative input is crucial in establishing an engaging and memorable brand presence.
 `
-
 
 
   const postContentResult = await openai.createChatCompletion({

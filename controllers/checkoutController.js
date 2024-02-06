@@ -51,7 +51,7 @@ export async function checkoutController(req, res) {
       mode: 'subscription',
       success_url: `https://app.getsweet.ai/brand-engagement-builder`,
     //   success_url: `${protocol}${host}/success`,
-      cancel_url: `https://app.getsweet.ai/payment-failed`,
+      cancel_url: `https://app.getsweet.ai/brand-engagement-builder`,
       payment_method_types: ['card'],
       customer: customer.id,
       metadata: {
