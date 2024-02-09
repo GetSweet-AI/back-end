@@ -95,6 +95,11 @@ const BrandEngagementSchema = new mongoose.Schema({
     enum: ["TextImagePost", "TextVideoPost","Both"],
     default: "TextVideoPost"
   },
+  language:{
+    type: String,
+    enum: ["English", "Spanish","French"],
+    default: "English"
+  },
   attachedPicture: {
     type: [String], // Array of strings (URLs)
     required: true,

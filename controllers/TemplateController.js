@@ -84,15 +84,21 @@
       if (!user) {
         throw new badRequestError('User ID not found');
       }
-
-      const templates = await Template.find({})
   
-      // Return the brand engagements as a response
-      res.status(200).json({ templates });
+      // Fetch all templates
+      const templates = await Template.find({});
+  
+      // Filter templates with endDate greater than the current date
+      const currentDate = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+      const validTemplates = templates.filter(template => template.endDate > currentDate);
+  
+      // Return the filtered templates as a response
+      res.status(200).json({ templates: validTemplates });
     } catch (error) {
       next(error);
     }
   };
+  
   // const getTemplates = async (req, res, next) => {
   //   try {
   //     const { userId } = req.query;
