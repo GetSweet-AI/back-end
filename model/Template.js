@@ -35,6 +35,7 @@ const TemplateSchema = new mongoose.Schema({
     default: "RunForEver"
   },
   endDate: {
+    required:false,
     type: String, // Storing the date as a string
     validate: {
       validator: function (value) {
@@ -45,6 +46,7 @@ const TemplateSchema = new mongoose.Schema({
     },
   },
   startDate: {
+    required:false,
     type: String, // Storing the date as a string
     validate: {
       validator: function (value) {

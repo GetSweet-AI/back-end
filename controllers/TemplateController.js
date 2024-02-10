@@ -22,7 +22,6 @@
         if (!userId) {
           throw new badRequestError('User ID not found');
         }
-        console.log('before')
         const brandTemplate = await Template.create({
           Title,
           CompanySector,
@@ -32,7 +31,6 @@
           lifeCycleStatus,
           createdBy: userId // Set createdBy to the userId
         });
-        console.log('after')
         res.status(StatusCodes.CREATED).json({ brandTemplate });
       } catch (error) {
         // Handle the error within the catch block
@@ -85,15 +83,21 @@
         throw new badRequestError('User ID not found');
       }
   
-      // Fetch all templates
-      const templates = await Template.find({});
-  
-      // Filter templates with endDate greater than the current date
       const currentDate = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
-      const validTemplates = templates.filter(template => template.endDate > currentDate);
+  
+      // Fetch templates that either run forever or have an endDate greater than the current date
+      const templates = await Template.find({
+        $or: [
+          { lifeCycleStatus: "RunForEver" },
+          { 
+            lifeCycleStatus: "HasEndDate",
+            endDate: { $gt: currentDate }
+          }
+        ]
+      });
   
       // Return the filtered templates as a response
-      res.status(200).json({ templates: validTemplates });
+      res.status(200).json({ templates });
     } catch (error) {
       next(error);
     }

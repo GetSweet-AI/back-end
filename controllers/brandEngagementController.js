@@ -194,7 +194,6 @@ const updatePostFeedCaption = async (req,res)=>{
   }
 }
 
-
 const getFeedPosts = async (req, res, next) => {
   try {
     const userId = req.params.userId; // Extract the userId from the route parameter
@@ -234,7 +233,6 @@ const getFeedPosts = async (req, res, next) => {
   }
 };
 
-
 const getFeedPostByBEId = async (req, res, next) => {
   try {
     const brandEngagementID = req.params.brandEngagementID; // Extract the userId from the route parameter
@@ -243,7 +241,7 @@ const getFeedPostByBEId = async (req, res, next) => {
     const startOfDay = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
     const endOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()}`;
 
-    const PAGE_SIZE = 3;
+    const PAGE_SIZE = 6;
     const page = parseInt(req.query.page || "0");
 
     const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth }  });
