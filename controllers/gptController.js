@@ -77,7 +77,7 @@ The output always is an array of objects like this : [  {label:'lebel here', val
 `
 
   const postContentResult = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-4',
     messages: [
       {
         role: 'system',
@@ -97,6 +97,41 @@ The output always is an array of objects like this : [  {label:'lebel here', val
    const cleanedPostContent = postContent.replace(/[\n\\]/g, '');
 
    res.json({ targetAudiences: cleanedPostContent });
+
+  // res.json({ postContent });
+}
+export async function generateNewCaption(req, res) {
+  const { userInput,caption  } = req.body;
+//Prompt
+const prompt = `
+Considering the user prompt 
+#1 - "${userInput}", 
+please revise the following caption to align with it:
+#2 -  "${caption}".
+Ensure consistency in length and format with the user's instructions.
+`
+
+  const generatedCaption = await openai.createChatCompletion({
+    model: 'gpt-4',
+    messages: [
+      {
+        role: 'system',
+        content: 'Act as a social media post caption generator for companies, based on a user input, you will generate another version of the post caption.',
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ],
+    temperature: 0,
+  });
+
+  const captionContent = generatedCaption.data.choices[0]?.message.content || '';
+  
+   // Remove newline characters (\n) and backslash (\) from the captionContent
+   const cleanedCaptionContent = captionContent.replace(/[\n\\]/g, '');
+
+   res.json({ newCaption: cleanedCaptionContent });
 
   // res.json({ postContent });
 }
