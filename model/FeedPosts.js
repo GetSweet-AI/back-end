@@ -75,6 +75,11 @@ const FeedPosts = new mongoose.Schema({
     type: String,
     required: false, // This makes the field optional
   },
+  HadFinalCheck:{
+    type:Boolean,
+    default:false,
+    required:false
+  }
 
   
 },{ timestamps: true });
