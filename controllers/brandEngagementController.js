@@ -247,11 +247,14 @@ const getFeedPostByBEId = async (req, res, next) => {
     const PAGE_SIZE = 6;
     const page = parseInt(req.query.page || "0");
 
-    const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth }  });
+    const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false});
+    // const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth }  });
 
     // Your logic to retrieve brand engagements based on the BrandEngagementID
-    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth } }).limit(PAGE_SIZE)
-    .skip(PAGE_SIZE * page).sort({Date:+1})
+    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false}).limit(PAGE_SIZE)
+    .skip(PAGE_SIZE * page).sort({Date:-1})
+    // const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth } }).limit(PAGE_SIZE)
+    // .skip(PAGE_SIZE * page).sort({Date:+1})
 
      // Return the brand engagements as a response
      res.status(200).json({total,totalPages: Math.ceil(total / PAGE_SIZE),feedPosts });
