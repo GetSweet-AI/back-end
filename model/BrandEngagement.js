@@ -4,6 +4,9 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import companySectors  from "../constants/objects.js";
 
+// Define all days of the week
+const daysEnum = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
 const BrandEngagementSchema = new mongoose.Schema({
   
     Timezone: {
@@ -111,7 +114,8 @@ const BrandEngagementSchema = new mongoose.Schema({
       message: 'attachedPictures must be an array of strings',
     },
   
-  }
+  },
+  days: { type: [{ type: String, enum: daysEnum }], default: [] }
 //   { timestamps: true }
 },{ timestamps: true });
 
