@@ -217,6 +217,25 @@ app.post("/uploads", async (req, res) => {
   }
 });
 
+// Update available tokens for a user with a specific ID
+// try {
+//   const userId = '65e8c3d5a5eba63fce7e913a'; // Replace 'user_id_here' with the actual user ID
+//   const numberOfTokens = 5; // Number of tokens to add or subtract (use negative value to subtract)
+//   const updatedUser = await User.findOneAndUpdate(
+//     { _id: userId },
+//     { $inc: { availableTokens: numberOfTokens } },
+//     { returnOriginal: false, maxTimeMS: 30000 } // Set timeout to 30 seconds
+//   );
+
+//   if (!updatedUser) {
+//     throw new Error('User not found');
+//   }
+
+//   console.log('Updated user:', updatedUser);
+// } catch (error) {
+//   console.error('Failed to update available tokens:', error.message);
+// }
+
 
 app.post("/billing", async (req, res) => {
   const { customer } = req.body;

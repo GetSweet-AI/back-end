@@ -9,7 +9,7 @@ const daysEnum = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const BrandEngagementSchema = new mongoose.Schema({
   
-    Timezone: {
+  Timezone: {
     type: String,
     required: [false, "Please provide Timezone"],
     // minlength: 3,
@@ -30,7 +30,7 @@ const BrandEngagementSchema = new mongoose.Schema({
     // minlength: 3,
     trim: true,
     default:"",
-    unique:true
+    unique:false
   },
   CompanySector: {
     type: String,
@@ -115,10 +115,28 @@ const BrandEngagementSchema = new mongoose.Schema({
     },
   
   },
-  days: { type: [{ type: String, enum: daysEnum }], default: [] }
-//   { timestamps: true }
+  days: { type: [{ type: String, enum: daysEnum }], default: [] },
+  campaignTitle: String // New field for campaign title
 },{ timestamps: true });
 
+
+// Middleware function to generate and assign campaign title before saving
+BrandEngagementSchema.pre('save', async function(next) {
+  // Only generate a new title if it's a new document
+  if (!this.isNew) {
+    return next();
+  }
+
+  try {
+    // Count the number of existing brand engagements with the same BrandName
+    const count = await this.constructor.countDocuments({ BrandName: this.BrandName,createdBy: this.createdBy });
+    // Set the campaign title to 'Campaign <count>'
+    this.campaignTitle = `Campaign ${count + 1}`;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 
 export default mongoose.model("BrandEngagement", BrandEngagementSchema);

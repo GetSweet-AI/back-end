@@ -18,11 +18,11 @@ const saveBrandEngagement = async (req, res) => {
     if (!userId) {
       throw new badRequestError('User ID not found');
     }
-     // Check if BrandName already exists
-     const existingBrand = await BrandEngagement.findOne({ BrandName });
-     if (existingBrand) {
-       return res.status(StatusCodes.BAD_REQUEST).json({ error: 'BrandName must be unique' });
-     }
+    //  // Check if BrandName already exists
+    //  const existingBrand = await BrandEngagement.findOne({ BrandName });
+    //  if (existingBrand) {
+    //    return res.status(StatusCodes.BAD_REQUEST).json({ error: 'BrandName must be unique' });
+    //  }
 
      
 
