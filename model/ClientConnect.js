@@ -49,7 +49,13 @@ const ClientConnectSchema = new mongoose.Schema({
         enum: ['yes', 'no', 'error'],
         default: 'no',
      },
+     TempLinkID:{
+      type: mongoose.Types.ObjectId,
+      ref: 'TempClientConnects',
+      required:false,
+     }
   
+
 });
 
 
