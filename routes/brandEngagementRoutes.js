@@ -1,5 +1,5 @@
 import express from "express";
-import { cloneBrandEngagement, deleteBrandEngagement, deleteFeedPost, getBrandEngByUserId, getBrandEngagementById, getBrandManagements, getFeedPostByBEId, getFeedPosts, saveBrandEngagement, saveFeedPost, updateBrandEngagementPostFeed, updatePostFeedCaption, updatedBERelatedPostsStatus } from "../controllers/brandEngagementController.js";
+import { cloneBrandEngagement, deleteBrandEngagement, deleteFeedPost, getBrandEngByUserId, getBrandEngagementById, getBrandManagements, getFeedPostByBEId, getFeedPosts, saveBrandEngagement, saveFeedPost, updateBrandEngagementCampaign, updateBrandEngagementPostFeed, updatePostFeedCaption, updatedBERelatedPostsStatus } from "../controllers/brandEngagementController.js";
 const router = express.Router();
 import authenticateUser from "../middleware/auth.js";
 
@@ -13,6 +13,8 @@ router.route("/feed-posts/:userId").get(getFeedPosts);
 router.route("/feed-posts-engagements/:brandEngagementID").get(getFeedPostByBEId);
 router.route("/brand-engagements/:id").delete(deleteBrandEngagement)
 router.route("/feed-posts/:id").delete(deleteFeedPost)
+router.put('/update-campaign/:id', updateBrandEngagementCampaign);
+
 
 router.route("/brand-engagements/:brandEngagementId/update-status").put(updatedBERelatedPostsStatus)
 

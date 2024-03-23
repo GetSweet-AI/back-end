@@ -177,6 +177,27 @@ const updateBrandEngagementPostFeed = async (req,res)=>{
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+const updateBrandEngagementCampaign = async (req,res)=>{
+  //To-do
+  try {
+    const { id } = req.params;
+    const { campaignTitle } = req.body;
+
+    // Update user information
+    const updatedBrandEngagement = await BrandEngagement.findOneAndUpdate(
+      { _id: id },
+      { $set: { campaignTitle:campaignTitle } },
+      { returnOriginal: false }
+    );
+
+    res.status(200).json({ brandEngagement: updatedBrandEngagement });
+
+  } catch (error) {
+    console.error('Error updating brand engagement:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 const updatePostFeedCaption = async (req,res)=>{
   //TO-DO : update caption by feedPostId and switch toBeRevised to true
   try {
@@ -370,4 +391,4 @@ const updatedBERelatedPostsStatus = async (req,res) => {
     }
 }
 
-export {updatePostFeedCaption,getBrandEngByUserId, cloneBrandEngagement,updatedBERelatedPostsStatus,getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
+export {updateBrandEngagementCampaign,updatePostFeedCaption,getBrandEngByUserId, cloneBrandEngagement,updatedBERelatedPostsStatus,getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
