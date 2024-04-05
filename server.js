@@ -34,6 +34,7 @@ import notFoundModule from "./middleware/not-found.js";
 import User from "./model/User.js";
 import Post from "./model/Post.js";
 import FeedPosts from "./model/FeedPosts.js";
+import BrandEngagement from "./model/BrandEngagement.js";
 
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
@@ -260,7 +261,6 @@ app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 5000;
 
-// app.listen(port, () => console.log(`Server is listening on port ${port}...`));
 
 const start = async () => {
   try {

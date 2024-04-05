@@ -1,7 +1,8 @@
 import express from "express";
-import { cloneBrandEngagement, deleteBrandEngagement, deleteFeedPost, getBrandEngByUserId, getBrandEngagementById, getBrandManagements, getFeedPostByBEId, getFeedPosts, saveBrandEngagement, saveFeedPost, updateBrandEngagementCampaign, updateBrandEngagementPostFeed, updatePostFeedCaption, updatedBERelatedPostsStatus } from "../controllers/brandEngagementController.js";
+import { cloneBrandEngagement, deleteBrandEngagement, deleteFeedPost, getBrandEngByUserId, getBrandEngagementById, getBrandManagements, getCampaignTitlesByBrandEngagementId, getFeedPostByBEId, getFeedPosts, saveBrandEngagement, saveFeedPost, updateBrandEngagementCampaign, updateBrandEngagementPostFeed, updatePostFeedCaption, updatedBERelatedPostsStatus } from "../controllers/brandEngagementController.js";
 const router = express.Router();
 import authenticateUser from "../middleware/auth.js";
+import { getTotalClientConnectStatus } from "../controllers/ClientConnectController.js";
 
 router.route("/save-brand-engagement/:userId").post(saveBrandEngagement);
 router.route("/clone-brand-engagement/:userId").post(cloneBrandEngagement);
@@ -20,6 +21,12 @@ router.route("/brand-engagements/:brandEngagementId/update-status").put(updatedB
 
 router.put('/update-brand-engagement/:id', updateBrandEngagementPostFeed);
 router.put('/feed-posts/:feedPostId', updatePostFeedCaption);
+
+
+// Define route for getting total client connect status
+router.get('/total-client-connect-status/:userId', getTotalClientConnectStatus);// Define route for getting campaign titles by BrandEngagementId
+router.get('/campaign-titles/:brandEngagementId',getCampaignTitlesByBrandEngagementId);
+
 
 export default router;
 

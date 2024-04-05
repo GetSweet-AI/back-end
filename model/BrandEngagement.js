@@ -113,7 +113,6 @@ const BrandEngagementSchema = new mongoose.Schema({
       },
       message: 'attachedPictures must be an array of strings',
     },
-  
   },
   days: { type: [{ type: String, enum: daysEnum }], default: [] },
   campaignTitle: String // New field for campaign title

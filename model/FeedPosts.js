@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 import companySectors  from "../constants/objects.js";
 
 const FeedPosts = new mongoose.Schema({
-  
     Date: {
     type: String,
     required: [true, "Please provide Date"],

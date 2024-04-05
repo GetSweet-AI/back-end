@@ -121,7 +121,6 @@ const getBrandManagements = async (req, res, next) => {
   }
 };
 
-//No pagination
 const getBrandEngByUserId = async (req, res, next) => {
   try {
     const userId = req.params.userId; // Extract the userId from the route parameter
@@ -129,15 +128,27 @@ const getBrandEngByUserId = async (req, res, next) => {
     if (!userId) {
       throw new Error('User ID not found');
     }
-    const brandEngagements = await BrandEngagement.find({ createdBy: userId })
+
+    // Get current date in ISO format
+    const currentDate = new Date().toISOString();
+
+    // Query for brand engagements where endDate is empty or greater than or equal to the current date
+    const brandEngagements = await BrandEngagement.find({ 
+      createdBy: userId,
+      // $or: [
+      //   { endDate: { $exists: false } }, // endDate is empty
+      //   { endDate: { $gte: currentDate } } // endDate is in the future
+      // ]
+    });
+
     const total = await BrandEngagement.countDocuments({ createdBy: userId });
+    
     // Return the brand engagements as a response
-    res.status(200).json({ total,brandEngagements });
+    res.status(200).json({ total, brandEngagements });
   } catch (error) {
     next(error);
   }
 };
-
 
 //by user id and brand engagement ID
 const getBrandEngagementById = async (req,res)=>{
@@ -391,4 +402,22 @@ const updatedBERelatedPostsStatus = async (req,res) => {
     }
 }
 
-export {updateBrandEngagementCampaign,updatePostFeedCaption,getBrandEngByUserId, cloneBrandEngagement,updatedBERelatedPostsStatus,getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
+async function getCampaignTitlesByBrandEngagementId(req, res) {
+  const { brandEngagementId } = req.params;
+
+  try {
+    const campaignTitles = await BrandEngagement.distinct('campaignTitle', { _id: brandEngagementId });
+    
+    // Create an array of objects similar to statusOptions
+    const formattedCampaigns = campaignTitles.map(title => ({ id: title, label: title, checked: false }));
+
+    res.json(formattedCampaigns);
+  } catch (error) {
+    console.error('Error retrieving unique campaign titles:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
+
+
+
+export {getCampaignTitlesByBrandEngagementId,updateBrandEngagementCampaign,updatePostFeedCaption,getBrandEngByUserId, cloneBrandEngagement,updatedBERelatedPostsStatus,getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
