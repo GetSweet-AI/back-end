@@ -156,6 +156,7 @@ const getBrandEngagementById = async (req,res)=>{
 
   try {
     const brandEngagement = await BrandEngagement.findById(id);
+    
 
     if (!brandEngagement) {
       return res.status(StatusCodes.NOT_FOUND).json({ error: "brandEngagement not found" });
@@ -277,24 +278,46 @@ const getFeedPostByBEId = async (req, res, next) => {
     const startOfDay = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
     const endOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()}`;
 
-    const PAGE_SIZE = 6;
-    const page = parseInt(req.query.page || "0");
-
     const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false});
     // const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth }  });
 
     // Your logic to retrieve brand engagements based on the BrandEngagementID
-    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false}).limit(PAGE_SIZE)
-    .skip(PAGE_SIZE * page).sort({Date:-1})
+    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false}).sort({Date:-1})
     // const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth } }).limit(PAGE_SIZE)
     // .skip(PAGE_SIZE * page).sort({Date:+1})
 
      // Return the brand engagements as a response
-     res.status(200).json({total,totalPages: Math.ceil(total / PAGE_SIZE),feedPosts });
+     res.status(200).json({total,feedPosts });
   } catch (error) {
     next(error);
   }
 };
+// const getFeedPostByBEId = async (req, res, next) => {
+//   try {
+//     const brandEngagementID = req.params.brandEngagementID; // Extract the userId from the route parameter
+
+//     const currentDate = new Date();
+//     const startOfDay = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+//     const endOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()}`;
+
+//     const PAGE_SIZE = 12;
+//     const page = parseInt(req.query.page || "0");
+
+//     const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false});
+//     // const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth }  });
+
+//     // Your logic to retrieve brand engagements based on the BrandEngagementID
+//     const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false}).limit(PAGE_SIZE)
+//     .skip(PAGE_SIZE * page).sort({Date:-1})
+//     // const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth } }).limit(PAGE_SIZE)
+//     // .skip(PAGE_SIZE * page).sort({Date:+1})
+
+//      // Return the brand engagements as a response
+//      res.status(200).json({total,totalPages: Math.ceil(total / PAGE_SIZE),feedPosts });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 const deleteBrandEngagement = async (req, res) => {
   const { id: brandId } = req.params
@@ -419,5 +442,39 @@ async function getCampaignTitlesByBrandEngagementId(req, res) {
 }
 
 
+const applyMediaTypeFilter = async (req, res, next) => {
+  try {
+    const brandEngagementID = req.params.brandEngagementID; // Extract the userId from the route parameter
+    const { isImage, isVideo } = req.query;
 
-export {getCampaignTitlesByBrandEngagementId,updateBrandEngagementCampaign,updatePostFeedCaption,getBrandEngByUserId, cloneBrandEngagement,updatedBERelatedPostsStatus,getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,saveBrandEngagement,getBrandManagements, deleteBrandEngagement,saveFeedPost, getFeedPosts,deleteFeedPost };
+    // Construct the filter based on the media type
+    const mediaTypeFilter = {};
+    if (isImage === 'true' && isVideo === 'true') {
+      mediaTypeFilter['$or'] = [
+        { MediaUrl: { $regex: /\.(jpeg|jpg|png)$/i } },
+        { MediaUrl: { $regex: /\.(mp4)$/i } }
+      ];
+    } else if (isImage === 'true') {
+      mediaTypeFilter['MediaUrl'] = { $regex: /\.(jpeg|jpg|png)$/i };
+    } else if (isVideo === 'true') {
+      mediaTypeFilter['MediaUrl'] = { $regex: /\.(mp4)$/i };
+    }
+
+    // Apply the brandEngagementID and media type filters
+    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID, toBeArchived: false, ...mediaTypeFilter })
+      .sort({ Date: -1 });
+
+    // Return the filtered feedPosts
+    res.status(200).json({ feedPosts });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export {applyMediaTypeFilter,getCampaignTitlesByBrandEngagementId,
+  updateBrandEngagementCampaign,updatePostFeedCaption,
+  getBrandEngByUserId, cloneBrandEngagement,updatedBERelatedPostsStatus,
+  getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,
+  saveBrandEngagement,getBrandManagements, deleteBrandEngagement,
+  saveFeedPost, getFeedPosts,deleteFeedPost };

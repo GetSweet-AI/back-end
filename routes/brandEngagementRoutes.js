@@ -1,5 +1,5 @@
 import express from "express";
-import { cloneBrandEngagement, deleteBrandEngagement, deleteFeedPost, getBrandEngByUserId, getBrandEngagementById, getBrandManagements, getCampaignTitlesByBrandEngagementId, getFeedPostByBEId, getFeedPosts, saveBrandEngagement, saveFeedPost, updateBrandEngagementCampaign, updateBrandEngagementPostFeed, updatePostFeedCaption, updatedBERelatedPostsStatus } from "../controllers/brandEngagementController.js";
+import { applyMediaTypeFilter, cloneBrandEngagement, deleteBrandEngagement, deleteFeedPost, getBrandEngByUserId, getBrandEngagementById, getBrandManagements, getCampaignTitlesByBrandEngagementId, getFeedPostByBEId, getFeedPosts, saveBrandEngagement, saveFeedPost, updateBrandEngagementCampaign, updateBrandEngagementPostFeed, updatePostFeedCaption, updatedBERelatedPostsStatus } from "../controllers/brandEngagementController.js";
 const router = express.Router();
 import authenticateUser from "../middleware/auth.js";
 import { getTotalClientConnectStatus } from "../controllers/ClientConnectController.js";
@@ -27,6 +27,8 @@ router.put('/feed-posts/:feedPostId', updatePostFeedCaption);
 router.get('/total-client-connect-status/:userId', getTotalClientConnectStatus);// Define route for getting campaign titles by BrandEngagementId
 router.get('/campaign-titles/:brandEngagementId',getCampaignTitlesByBrandEngagementId);
 
+// Route for applying media type filter to feedPosts
+router.get('/brandEngagement/:brandEngagementID/filter', applyMediaTypeFilter);
 
 export default router;
 
