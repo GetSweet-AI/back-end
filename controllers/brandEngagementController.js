@@ -283,7 +283,8 @@ const getFeedPostByBEId = async (req, res, next) => {
 
     // Your logic to retrieve brand engagements based on the BrandEngagementID
     // const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false}).sort({Date:-1})
-    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth } }).sort({Date:+1})
+    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth } })
+.sort({Date:+1})
 
      // Return the brand engagements as a response
      res.status(200).json({total,feedPosts });
@@ -446,6 +447,12 @@ const applyMediaTypeFilter = async (req, res, next) => {
     const brandEngagementID = req.params.brandEngagementID; // Extract the userId from the route parameter
     const { isImage, isVideo } = req.query;
 
+
+    const currentDate = new Date();
+    const startOfDay = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+    const endOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()}`;
+
+
     // Construct the filter based on the media type
     const mediaTypeFilter = {};
     if (isImage === 'true' && isVideo === 'true') {
@@ -460,8 +467,8 @@ const applyMediaTypeFilter = async (req, res, next) => {
     }
 
     // Apply the brandEngagementID and media type filters
-    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID, toBeArchived: false, ...mediaTypeFilter })
-      .sort({ Date: -1 });
+    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID, toBeArchived: false,Date: { $gte: startOfDay, $lt: endOfMonth }, ...mediaTypeFilter })
+      .sort({ Date: +1 });
 
     // Return the filtered feedPosts
     res.status(200).json({ feedPosts });
