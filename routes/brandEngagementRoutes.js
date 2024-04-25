@@ -1,5 +1,5 @@
 import express from "express";
-import { applyMediaTypeFilter, cloneBrandEngagement, deleteBrandEngagement, deleteFeedPost, getBrandEngByUserId, getBrandEngagementById, getBrandManagements, getCampaignTitlesByBrandEngagementId, getFeedPostByBEId, getFeedPosts, saveBrandEngagement, saveFeedPost, updateBrandEngagementCampaign, updateBrandEngagementPostFeed, updatePostFeedCaption, updatedBERelatedPostsStatus } from "../controllers/brandEngagementController.js";
+import { applyMediaTypeFilter, cloneBrandEngagement, deleteBrandEngagement, deleteFeedPost, getBrandEngByUserId, getBrandEngagementById, getBrandManagements, getCampaignTitlesByBrandEngagementId, getExBrandManagements, getFeedPostByBEId, getFeedPosts, saveBrandEngagement, saveFeedPost, updateBrandEngagementCampaign, updateBrandEngagementPostFeed, updatePostFeedCaption, updatedBERelatedPostsStatus } from "../controllers/brandEngagementController.js";
 const router = express.Router();
 import authenticateUser from "../middleware/auth.js";
 import { getTotalClientConnectStatus } from "../controllers/ClientConnectController.js";
@@ -10,6 +10,7 @@ router.route("/save-feed-post/:userId").post(saveFeedPost);
 router.route("/brand-engagements/:userId").get(getBrandManagements);
 router.route("/brand-engagements-np/:userId").get(getBrandEngByUserId);
 router.route("/brand-engagement/:id").get(getBrandEngagementById);
+router.route("/brand-engagements-ex").get(getExBrandManagements);
 router.route("/feed-posts/:userId").get(getFeedPosts);
 router.route("/feed-posts-engagements/:brandEngagementID").get(getFeedPostByBEId);
 router.route("/brand-engagements/:id").delete(deleteBrandEngagement)

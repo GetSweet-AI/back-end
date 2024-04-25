@@ -477,10 +477,35 @@ const applyMediaTypeFilter = async (req, res, next) => {
   }
 };
 
+const getExBrandManagements = async (req, res, next) => {
+  try {
+    const PAGE_SIZE = 9;
+    const page = parseInt(req.query.page || "0");
+
+    // Count total documents
+    const total = await BrandEngagement.countDocuments();
+
+    // Retrieve the latest brand engagements
+    const brandEngagements = await BrandEngagement.find()
+      .sort({ createdAt: -1 }) // Sort by creation date in descending order
+      .skip(PAGE_SIZE * page) // Skip the pages
+      .limit(PAGE_SIZE); // Limit to PAGE_SIZE
+
+    // Calculate total pages
+    const totalPages = Math.ceil(total / PAGE_SIZE);
+
+    // Return the brand engagements as a response
+    res.status(200).json({ total, totalPages, brandEngagements });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 
 export {applyMediaTypeFilter,getCampaignTitlesByBrandEngagementId,
   updateBrandEngagementCampaign,updatePostFeedCaption,
   getBrandEngByUserId, cloneBrandEngagement,updatedBERelatedPostsStatus,
   getFeedPostByBEId,updateBrandEngagementPostFeed,getBrandEngagementById,
   saveBrandEngagement,getBrandManagements, deleteBrandEngagement,
-  saveFeedPost, getFeedPosts,deleteFeedPost };
+  saveFeedPost, getFeedPosts,deleteFeedPost,getExBrandManagements };
