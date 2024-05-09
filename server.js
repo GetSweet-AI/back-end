@@ -41,7 +41,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
- // Webhook listener
+// Webhook listener
   app.post('/webhook',
     express.raw({ type: 'application/json' }),
     async (req, res) => {

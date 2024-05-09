@@ -245,7 +245,7 @@ const sendVerificationCode = async (req, res) => {
       service:'gmail',
       auth: {
         user: 'sales@getsweet.ai',
-        pass: 'bripwwstustvdiei',
+        pass: 'fympkfmzdcswtryt',
       },
     });
     console.log('after');
@@ -293,7 +293,7 @@ const sendWelcomeMessage = async (req, res) => {
       service:'gmail',
       auth: {
         user: 'sales@getsweet.ai',
-        pass: 'bripwwstustvdiei',
+        pass: 'fympkfmzdcswtryt',
       },
     });
 
@@ -527,7 +527,7 @@ const confirmUserEmail = async (req, res) => {
         service: 'gmail',
         auth: {
           user: 'sales@getsweet.ai',
-          pass: 'bripwwstustvdiei',
+          pass: 'fympkfmzdcswtryt',
         },
       });
 
@@ -613,7 +613,7 @@ const sendEmailVerification = async (req, res) => {
       service: 'gmail',
       auth: {
         user: 'sales@getsweet.ai',
-        pass: 'bripwwstustvdiei',
+        pass: 'fympkfmzdcswtryt',
       },
     });
 
@@ -641,6 +641,7 @@ const sendEmailVerification = async (req, res) => {
     res.status(StatusCodes.OK).json({ message: 'Email verification link sent successfully' });
   } catch (error) {
     // Handle error
+    console.error('Failed to send email:', error); // Log detailed error for debugging
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
   }
 };

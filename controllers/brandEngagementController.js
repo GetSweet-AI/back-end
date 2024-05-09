@@ -291,34 +291,89 @@ const getFeedPosts = async (req, res, next) => {
 //     next(error);
 //   }
 // };
+// const getFeedPostByBEId = async (req, res, next) => {
+//   try {
+//     const brandEngagementID = req.params.brandEngagementID; // Extract the userId from the route parameter
+//     const isArchive = req.query.isArchive === 'true';
+    
+//     const currentDate = new Date();
+//     const startOfDay = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+//     const endOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().
+//       padStart(2, '0')}-${new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()}`;
+
+//     const PAGE_SIZE = 6;
+//     const page = parseInt(req.query.page || "0");
+
+//     const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false
+//     });
+//     // const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth }  });
+
+//     // Your logic to retrieve brand engagements based on the BrandEngagementID
+//     const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false}).limit(PAGE_SIZE)
+//     .skip(PAGE_SIZE * page).sort({Date:-1})
+//     // const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth } }).limit(PAGE_SIZE)
+//     // .skip(PAGE_SIZE * page).sort({Date:+1})
+
+//      // Return the brand engagements as a response
+//      res.status(200).json({total,totalPages: Math.ceil(total / PAGE_SIZE),feedPosts });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+
+
+
+
+
+
+//hooconst 
 const getFeedPostByBEId = async (req, res, next) => {
   try {
-    const brandEngagementID = req.params.brandEngagementID; // Extract the userId from the route parameter
+    const brandEngagementID = req.params.brandEngagementID;
+    const isArchived = req.query.isArchived === 'true';
+    const isScheduled = req.query.isScheduled;
 
     const currentDate = new Date();
-    const startOfDay = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
-    const endOfMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().
-      padStart(2, '0')}-${new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()}`;
+    const startOfToday = currentDate.setHours(0, 0, 0, 0); // Start of today
 
     const PAGE_SIZE = 6;
     const page = parseInt(req.query.page || "0");
 
-    const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false
+    // Build query based on parameters
+    let query = {
+      BrandEngagementID: brandEngagementID,
+      toBeArchived: isArchived,
+    };
+
+    // Adjust query based on the scheduling flag
+    if (isScheduled === 'true') {
+      query.unixTimestamp = { $gte: startOfToday.toString() }; // Scheduled for today or future
+    } else if (isScheduled === 'false') {
+      query.unixTimestamp = { $lt: startOfToday.toString() }; // Not scheduled (i.e., scheduled for a past date or no schedule)
+    }
+
+    const total = await FeedPosts.countDocuments(query);
+
+    // Fetch posts with pagination and sorting
+    const feedPosts = await FeedPosts.find(query)
+      .limit(PAGE_SIZE)
+      .skip(PAGE_SIZE * page)
+      .sort({ Date: -1 }); // Sorting by date descending
+
+    // Respond with the total count, total pages, and the posts themselves
+    res.status(200).json({
+      total,
+      totalPages: Math.ceil(total / PAGE_SIZE),
+      feedPosts
     });
-    // const total = await FeedPosts.countDocuments({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth }  });
-
-    // Your logic to retrieve brand engagements based on the BrandEngagementID
-    const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false}).limit(PAGE_SIZE)
-    .skip(PAGE_SIZE * page).sort({Date:-1})
-    // const feedPosts = await FeedPosts.find({ BrandEngagementID: brandEngagementID,toBeArchived:false,Date: { $gte: startOfDay, $lt: endOfMonth } }).limit(PAGE_SIZE)
-    // .skip(PAGE_SIZE * page).sort({Date:+1})
-
-     // Return the brand engagements as a response
-     res.status(200).json({total,totalPages: Math.ceil(total / PAGE_SIZE),feedPosts });
   } catch (error) {
     next(error);
   }
 };
+
+
+
 
 const deleteBrandEngagement = async (req, res) => {
   const { id: brandId } = req.params
@@ -441,7 +496,6 @@ async function getCampaignTitlesByBrandEngagementId(req, res) {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
-
 
 const applyMediaTypeFilter = async (req, res, next) => {
   try {
