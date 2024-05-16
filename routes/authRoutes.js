@@ -8,7 +8,9 @@ import { register, login,
       verifyEmail, resetPassword, 
       deleteUser, getUserById,
        confirmUserEmail, sendEmailVerification, updateAvailableTokens, authenticateUser, sendWelcomeMessage, subscribeToNewsLetter, updateNameAndCompany, updateNotificationMessage, disableFirstLogin
+       
      } from "../controllers/authController.js";
+import checkTrialStatus from "../middleware/checkTrialStatus.js";
 
 router.route("/register").post(register);
 router.route("/login").post(login);
@@ -23,6 +25,7 @@ router.route("/send-welcome-email").post(sendWelcomeMessage);
 router.post('/verify-email', verifyEmail);
 router.post('/reset-password', resetPassword);
 router.get('/users/:userId', getUserById);
+router.get('/check-free-trial/:userId', checkTrialStatus);
 
 router.delete('/users/:userId',deleteUser);
 

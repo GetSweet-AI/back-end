@@ -54,7 +54,7 @@ const UserSchema = new mongoose.Schema({
     availableTokens: {
       type: Number,
       required: false,
-      default:3
+      default:1
     },
     customerId: {
       type: String,
@@ -78,8 +78,8 @@ const UserSchema = new mongoose.Schema({
     },
     Plan:{
       type:String,
-      enum: ["none", "basic", "pro","pro_plus"],
-      default:"none"
+      enum: ["Free", "Starter Plan", "Growth","Business"],
+      default:"Free"
     },
     invoiceUrl : {
       type:String,
@@ -104,7 +104,16 @@ const UserSchema = new mongoose.Schema({
     countBrandEngagements:{
       type:Number,
       default:0
+    },
+    trialStartDate: {
+      type: Date,
+      default: Date.now,
+    },
+    isTrialActive: {
+      type: Boolean,
+      default: true,
     }
+    
     
 },{ timestamps: true });
 

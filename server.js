@@ -35,6 +35,7 @@ import User from "./model/User.js";
 import Post from "./model/Post.js";
 import FeedPosts from "./model/FeedPosts.js";
 import BrandEngagement from "./model/BrandEngagement.js";
+import checkTrialStatus from "./middleware/checkTrialStatus.js";
 
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
@@ -88,22 +89,20 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
         if ( event.data.object.lines.data[0].plan.id === process.env.STRIPE_PRODUCT_PRICE_ID) {
           // console.log('You are talking about basic product')
           plan = 'Starter Plan';
-          number_of_tokens = 10;
+          number_of_tokens = 3;
 
         }
         if ( event.data.object.lines.data[0].plan.id === process.env.STRIPE_PRODUCT_PRO_PRICE_ID) {
           // console.log('You are talking about por product')
           plan = 'Growth';
-          number_of_tokens=20;
+          number_of_tokens=5;
         }
         if ( event.data.object.lines.data[0].plan.id === process.env.STRIPE_PRODUCT_PRO_PLUS_PRICE_ID) {
           // console.log('You are talking about pro plus product')
           plan = 'Business';
-          number_of_tokens=30
-
+          number_of_tokens=10
         }
   
-
         switch (event.type) {
           case 'invoice.paid':
             /*
@@ -134,7 +133,7 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
                 $set: {Plan: plan,invoiceUrl:dataObject.hosted_invoice_url
                   ,subscriptionId:dataObject['subscription'],
                   planId:event.data.object.lines.data[0].plan.id,
-                  notificationMessage:"payment_succeeded" }
+                  notificationMessage:"payment_succeeded",isTrialActive:false }
             },
               { returnOriginal: false }
             );
@@ -197,54 +196,12 @@ const stripe = stripeInit(process.env.STRIPE_SECRET_KEY);
   )
 // app.use(express.json());
 
-
 // Increase the request size limit
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 
 // Routes
 app.use('/', imageRoutes);
-
-
-app.post("/uploads", async (req, res) => {
-  const body = req.body;
-
-  try {
-    await Post.create(body); // Create and save the document in one step
-
-    res.status(201).json({ msg: "New image uploaded...!" });
-  } catch (error) {
-    res.status(409).json({ message: error.message });
-  }
-});
-
-// Update available tokens for a user with a specific ID
-// try {
-//   const userId = '65e8c3d5a5eba63fce7e913a'; // Replace 'user_id_here' with the actual user ID
-//   const numberOfTokens = 5; // Number of tokens to add or subtract (use negative value to subtract)
-//   const updatedUser = await User.findOneAndUpdate(
-//     { _id: userId },
-//     { $inc: { availableTokens: numberOfTokens } },
-//     { returnOriginal: false, maxTimeMS: 30000 } // Set timeout to 30 seconds
-//   );
-
-//   if (!updatedUser) {
-//     throw new Error('User not found');
-//   }
-
-//   console.log('Updated user:', updatedUser);
-// } catch (error) {
-//   console.error('Failed to update available tokens:', error.message);
-// }
-
-
-app.post("/billing", async (req, res) => {
-  const { customer } = req.body;
-
-  const session = await Stripe.createBillingSession(customer);
-
-  res.json({ url: session.url });
-});
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
@@ -255,12 +212,13 @@ app.use("/api/v1",checkoutRoutes );
 app.use("/api/v1",stripeRouter );
 app.use("/api/v1",clientConnectsRoutes );
 
+
+
+
 app.use(notFoundModule);
 app.use(errorHandlerMiddleware);
 
-
 const port = process.env.PORT || 5000;
-
 
 const start = async () => {
   try {
