@@ -41,9 +41,9 @@ const BrandEngagementSchema = new mongoose.Schema({
   },
   BrandTone: {
     type: String,
-    required: [true, "Please provide brand tone"],
+    required: false,
     trim: true,
-    default:""
+    default:"Friendly"
   },
   // TargetAudience: {
   //   type: String,

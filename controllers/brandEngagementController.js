@@ -9,8 +9,8 @@ const saveBrandEngagement = async (req, res) => {
   try {
     const { lifeCycleStatus,endDate,startDate,Timezone, CompanySector, BrandTone, TargetAudience, postContent, WebSite, BrandName,PostType,language,days } = req.body;
 
-    if (!CompanySector || !BrandTone || !BrandName) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ error: 'CompanySector, BrandTone, and BrandName are required fields' });
+    if (!CompanySector || !BrandName) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Brand Description and BrandName are required fields' });
     }
     
     const userId = req.params.userId; // Extract the userId from the route parameter
@@ -332,7 +332,8 @@ const getFeedPostByBEId = async (req, res, next) => {
   try {
     const brandEngagementID = req.params.brandEngagementID;
     const isArchived = req.query.isArchived === 'true';
-    const isScheduled = req.query.isScheduled;
+    const isScheduled = req.query.isScheduled === 'true';
+    const isNonScheduled = req.query.isNonScheduled === 'true';
 
     const currentDate = new Date();
     const startOfToday = currentDate.setHours(0, 0, 0, 0); // Start of today
@@ -346,11 +347,14 @@ const getFeedPostByBEId = async (req, res, next) => {
       toBeArchived: isArchived,
     };
 
-    // Adjust query based on the scheduling flag
-    if (isScheduled === 'true') {
+    // Adjust query based on the scheduling flags
+    if (isScheduled) {
       query.unixTimestamp = { $gte: startOfToday.toString() }; // Scheduled for today or future
-    } else if (isScheduled === 'false') {
-      query.unixTimestamp = { $lt: startOfToday.toString() }; // Not scheduled (i.e., scheduled for a past date or no schedule)
+    } else if (isNonScheduled) {
+      query.unixTimestamp = { $exists: false }; // Not scheduled
+    } else {
+      // Default to not showing past scheduled posts if neither scheduled nor non-scheduled is checked
+      query.unixTimestamp = { $lt: startOfToday.toString() }; // Scheduled for a past date
     }
 
     const total = await FeedPosts.countDocuments(query);
@@ -371,6 +375,8 @@ const getFeedPostByBEId = async (req, res, next) => {
     next(error);
   }
 };
+
+
 
 
 
