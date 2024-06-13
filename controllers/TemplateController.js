@@ -8,36 +8,35 @@
 
   dotenv.config(); 
 
-  //Add new template
-  const addNewTemplate = async (req, res) => {
-      try {
-        const { startDate,endDate,lifeCycleStatus,Title, CompanySector, BrandTone } = req.body;
-    
-        if (!Title || !BrandTone  ) {
-          return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Title and BrandTone are required fields' });
-        }
-        
-        const userId = req.params.userId; // Extract the userId from the route parameter
-    
-        if (!userId) {
-          throw new badRequestError('User ID not found');
-        }
-        const brandTemplate = await Template.create({
-          Title,
-          CompanySector,
-          BrandTone,
-          endDate,
-          startDate,
-          lifeCycleStatus,
-          createdBy: userId // Set createdBy to the userId
-        });
-        res.status(StatusCodes.CREATED).json({ brandTemplate });
-      } catch (error) {
-        // Handle the error within the catch block
-        // console.error(error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'An error occurred' });
-      }
-  };
+// Add new template
+const addNewTemplate = async (req, res) => {
+  try {
+    const { Title, CompanySector } = req.body;
+
+    if (!Title || !CompanySector) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Title and Company Sector are required fields' });
+    }
+
+    const userId = req.params.userId; // Extract the userId from the route parameter
+
+    if (!userId) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ error: 'User ID not found' });
+    }
+
+    const brandTemplate = await Template.create({
+      Title,
+      CompanySector,
+      
+      createdBy: userId // Set createdBy to the userId
+    });
+
+    res.status(StatusCodes.CREATED).json({ brandTemplate });
+  } catch (error) {
+    // Handle the error within the catch block
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'An error occurred' });
+  }
+};
 
   //Delete template 
   const archiveTemplate = async (req, res) => {
